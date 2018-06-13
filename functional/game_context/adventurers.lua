@@ -60,6 +60,10 @@ function adventurers.set_adventurer(game_ctx, id, adventurer_ind)
     adventurers.unset_adventurer(game_ctx, id)
   end
 
+  if game_ctx.adventurers[adventurer_ind].attached_id then
+    adventurers.unset_adventurer(game_ctx, game_ctx.adventurers[adventurer_ind].attached_id)
+  end
+
   game_ctx.adventurers[adventurer_ind].attached_id = id
   game_ctx.adventurers_by_id[id] = adventurer_ind
 end
