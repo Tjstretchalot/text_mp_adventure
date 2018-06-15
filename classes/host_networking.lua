@@ -64,6 +64,7 @@ local function handle_client(self, game_ctx, local_ctx, event_queue, cl)
       local events_serd = json.decode(full_msg)
       for i, evnt_serd in ipairs(events_serd) do
         local event = Events[evnt_serd[1]].deserialize(evnt_serd[2])
+        event:context_changed(game_ctx)
         self:broadcast_events(game_ctx, local_ctx, {event})
         if event.class_name == 'ExitEvent' then
           cl.socket:close()

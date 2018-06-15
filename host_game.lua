@@ -16,6 +16,8 @@ local HostNetworking = require('classes/host_networking')
 require('classes/local_context/serializers/all')
 require('classes/game_context/serializers/all')
 
+local TimeEvent = require('classes/events/time')
+
 -- endregion
 
 local game_ctx, event_queue
@@ -38,6 +40,9 @@ local function load()
   file = io.open('saves/event_queue.json')
   event_queue = EventQueue.deserialize(json.decode(file:read('*all')))
   file:close()
+
+  game_ctx:context_changed(game_ctx)
+  event_queue:context_changed(game_ctx)
 end
 
 local function create_or_load()
@@ -73,8 +78,18 @@ local host_networking = HostNetworking:new{port = port}
 
 print('Bound on ' .. host_networking.ip .. ':' .. host_networking.port)
 
+local last_updated_time = socket.gettime()*1000
+local function update_time()
+  local cur_time = socket.gettime() * 1000
+  local delta_time = cur_time - last_updated_time
+  if delta_time >= 1000 then
+    host_networking:broadcast_events(game_ctx, local_ctx, { TimeEvent:new{ms = math.floor(delta_time)} })
+    last_updated_time = cur_time
+  end
+end
+
 local succ, err = xpcall(function()
-  require('main_input_loop')(game_ctx, local_ctx, event_queue, listener_processor, command_processor, host_networking)
+  require('main_input_loop')(game_ctx, local_ctx, event_queue, listener_processor, command_processor, host_networking, update_time)
 end, function(e)
   return {e, debug.traceback()}
 end)

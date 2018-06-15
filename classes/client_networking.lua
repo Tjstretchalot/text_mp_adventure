@@ -52,6 +52,7 @@ function ClientNetworking:connect()
   end
   local game_ctx_serd = json.decode(game_ctx_serd_encoded)
   local game_ctx = GameContext.deserialize(game_ctx_serd)
+  game_ctx:context_changed(game_ctx)
 
   local initial_sync_events_serd_encoded, err = self.server:receive('*l')
   if not initial_sync_events_serd_encoded then
@@ -73,7 +74,9 @@ local function parse_from_server(self, game_ctx, local_ctx, event_queue, msg)
   local events_serd = json.decode(msg)
 
   for _, serd in ipairs(events_serd) do
-    event_queue:enqueue(Events[serd[1]].deserialize(serd[2]))
+    local event = Events[serd[1]].deserialize(serd[2])
+    event:context_changed(game_ctx)
+    event_queue:enqueue(event)
   end
 end
 
