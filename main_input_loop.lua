@@ -55,7 +55,13 @@ return function(game_ctx, local_ctx, event_queue, list_processor, command_proces
     if local_ctx.dirty then
       io.write('\27[2K')
       io.write('\r')
-      io.write(cached_input)
+
+      if #cached_input < 100 then
+        io.write(cached_input)
+      else
+        io.write(cached_input:sub(#cached_input - 100))
+      end
+      local_ctx.dirty = false
     end
 
     sleep(0.008)

@@ -39,12 +39,18 @@ function InspectCommand.priority() return 'explicit' end
 
 function InspectCommand:parse(game_ctx, local_ctx, text)
   if text:sub(1, 8) == '/inspect' then
-    local args = arg_parser.parse(text)
-    if #args ~= 1 then
+    local args, err = arg_parser.parse_allow_quotes(text)
+    if not args then
+      print('\27[K\r' .. text)
+      print('  Error parsing arguments: ' .. err)
+      return true, {}
+    end
+
+    if #args ~= 2 then
       return print_help(text)
     end
 
-    return safish_inspect(game_ctx, local_ctx, text, args[1])
+    return safish_inspect(game_ctx, local_ctx, text, args[2])
   end
 
   return false, nil

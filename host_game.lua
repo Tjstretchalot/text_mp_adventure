@@ -14,6 +14,7 @@ local ListenerProcessor = require('classes/listener_processor')
 local HostNetworking = require('classes/host_networking')
 
 require('classes/local_context/serializers/all')
+require('classes/game_context/serializers/all')
 
 -- endregion
 

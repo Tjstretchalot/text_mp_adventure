@@ -15,6 +15,7 @@ local CommandProcessor = require('classes/command_processor')
 local ClientNetworking = require('classes/client_networking')
 
 require('classes/local_context/serializers/all')
+require('classes/game_context/serializers/all')
 -- endregion
 
 local host = console.string('Host?')

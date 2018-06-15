@@ -18,7 +18,9 @@ function inspect.pretty_print_table(tabl, nest_level, indent_str, spotted)
       io.write(indent_str)
     end
 
+    if type(k) == 'string' then io.write('\'') end
     io.write(k)
+    if type(k) == 'string' then io.write('\'') end
     io.write(' = ')
 
     if type(v) == 'table' then
@@ -35,6 +37,10 @@ function inspect.pretty_print_table(tabl, nest_level, indent_str, spotted)
         end
         io.write('}\n')
       end
+    elseif type(v) == 'string' then
+      io.write('\'')
+      io.write(v)
+      io.write('\'\n')
     else
       io.write(tostring(v))
       io.write('\n')
