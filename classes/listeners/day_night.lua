@@ -8,6 +8,7 @@ local prototype = require('prototypes/prototype')
 require('prototypes/listener')
 
 local TalkEvent = require('classes/events/talk')
+local DayNightCycleEvent = require('classes/events/day_night_cycle')
 -- endregion
 
 local DayNightListener = {}
@@ -25,14 +26,14 @@ function DayNightListener:process(game_ctx, local_ctx, networking, event)
       game_ctx.day.is_day = false
       game_ctx.day.time_to_next_cycle_ms = game_ctx.day.time_to_next_cycle_ms + 30000
       if local_ctx.id == 0 then
-        networking:broadcast_events(game_ctx, local_ctx, {TalkEvent:new{id = -1, message = 'Night has begun!'}})
+        networking:broadcast_events(game_ctx, local_ctx, {TalkEvent:new{id = -1, message = 'Night has begun!'}, DayNightCycleEvent:new{is_day = false}})
       end
     else
       game_ctx.day.is_day = true
       game_ctx.day.time_to_next_cycle_ms = game_ctx.day.time_to_next_cycle_ms + 90000
 
       if local_ctx.id == 0 then
-        networking:broadcast_events(game_ctx, local_ctx, {TalkEvent:new{id = -1, message = 'Day has begun!'}})
+        networking:broadcast_events(game_ctx, local_ctx, {TalkEvent:new{id = -1, message = 'Day has begun!'}, DayNightCycleEvent:new{is_day = true}})
       end
     end
   end
