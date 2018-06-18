@@ -40,7 +40,7 @@ function array.public_primitives_deep_copy(arr)
       local tp = type(v)
       if tp == 'table' then
         copy[k] = array.public_primitives_deep_copy(v)
-      elseif tp == 'string' or tp == 'number' then
+      elseif tp == 'string' or tp == 'number' or tp == 'boolean' then
         copy[k] = v
       else
         error('arr[\'' .. tostring(k) .. '\'] is a ' .. tp .. ', not a primitive', 2)

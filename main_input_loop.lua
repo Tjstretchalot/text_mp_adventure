@@ -11,6 +11,7 @@ return function(game_ctx, local_ctx, event_queue, list_processor, command_proces
     networking:broadcast_events(game_ctx, local_ctx, events)
   end
 
+  local last_input = ''
   local cached_input = ''
   while not exit_requested do
     local event = event_queue:dequeue()
@@ -37,9 +38,9 @@ return function(game_ctx, local_ctx, event_queue, list_processor, command_proces
 
       local new_key_code = tonumber(new_key_str:sub(1, first_space))
       local new_key_char = new_key_str:sub(first_space + 1)
-
       if new_key_code == 13 then
         io.write('\27[2K\r')
+        last_input = cached_input
         handle_line(cached_input)
         cached_input = ''
       elseif new_key_code == 8 then
@@ -48,6 +49,10 @@ return function(game_ctx, local_ctx, event_queue, list_processor, command_proces
         else
           cached_input = ''
         end
+      elseif new_key_code == 38 then
+        local tmp = cached_input
+        cached_input = last_input
+        last_input = tmp
       else
         cached_input = cached_input .. new_key_char
       end

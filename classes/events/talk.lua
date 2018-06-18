@@ -37,9 +37,11 @@ function TalkEvent:process(game_ctx, local_ctx)
     else
       io.write('<Player ' .. self.id .. '>: ')
     end
+  else
+    io.write('\27[4m')
   end
 
-  io.write(self.message .. '\n')
+  io.write(self.message .. '\27[0m\n')
 
   local_ctx.dirty = true
 end
