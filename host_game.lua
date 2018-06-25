@@ -70,7 +70,33 @@ local function save()
   file:close()
 end
 -- endregion
+-- region lock helpers
+local function try_get_lock()
+  local succ, err = os.rename('saves/.lock', 'saves/.lock')
+  if succ then
+    error('Could not create lock file (already exists)! If no server is running, delete saves/.lock')
+  end
 
+  local hndl, err = io.open('saves/.lock', 'w')
+  if not hndl then error('Failed to create lock file saves/.lock: ' .. tostring(err)) end
+  hndl:close()
+end
+
+local function release_lock()
+  local succ, err = os.rename('saves/.lock', 'saves/.lock')
+  if not succ then
+    print('Lock file was deleted! We will try to save after user input..')
+    os.execute('pause')
+  end
+
+  local succ, err = os.remove('saves/.lock')
+  if not succ then
+    print('Failed to delete lock file! We will try to save after user input..')
+    os.execute('pause')
+  end
+end
+-- endregion
+try_get_lock()
 create_or_load()
 
 local port = console.numeric('What port? Use 0 for the os to choose: ')
@@ -103,5 +129,6 @@ end
 
 host_networking:disconnect()
 
+release_lock()
 io.write('\27[2k\rSaving...\n')
 save()
