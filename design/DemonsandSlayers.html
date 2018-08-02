@@ -1,0 +1,310 @@
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      width: 90%;
+      margin: 0 auto;
+    }
+    
+    li {
+      margin-bottom: 5px;
+    }
+    
+    h3 {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+<h1>Demons and Slayers</h1>
+<h2>General</h2>
+<p><strong>Mechanic Notes</strong></p>
+<ul>
+<li>Chance to failure stacks multiplicatively. If you have a 30% chance to fail
+an action and another 50% chance to fail, then you have <code>0.3 + (0.5 * 0.7) = 0.65</code>
+65% chance of failure. Note order doesn't matter; <code>0.5 + (0.3 * 0.5) = 0.65</code>.</li>
+<li>Movement takes you from one zone to another adjacent zone. The map specifies
+the time during the movement that is inside the first location and the time
+during the movement that is inside the second location. Movements may not be
+cancelled for any reason. The player is prevented from moving through impassable
+locations, but if a location becomes impassable during a move the player
+is immediately returned to his starting location and told why.</li>
+</ul>
+<p><strong>Gameplay Notes</strong></p>
+<p>Unless otherwise stated,</p>
+<ul>
+<li>All players may move between locations. Moving takes time (see map). Players
+are alerted to movements through their location according to the light level.</li>
+<li>All players with vision on a location have a chance to see any actions
+by players in that location, according to the light level.</li>
+<li>All abilities may be used once per cycle. Players with two abilities may
+use both. Abilities act instantly unless they state otherwise.</li>
+<li>All players have <strong>Short Sleep</strong>: Sleep for 3 hours (11.25s at night, 16.875s
+at day). Players do not receive messages while sleeping, may be tied up by a
+single player, and do not defend attacks.</li>
+<li>All players have <strong>Long Sleep</strong>: Sleep for 6 hours (22.5s at night, 33.75s
+at day). Players do not receive messages while sleeping, may be tied up by a
+single player, and do not defend attacks.</li>
+<li>All demons give off a demonic trace in any location they enter, lasting one
+cycle.</li>
+<li>All demons have the ability <strong>Prove Demon</strong> which proves they are a demon
+to everyone in the location. <strong>Prove Demon</strong> does not have a cooldown.</li>
+<li>Some locations are consecrated. In these locations, demons:
+<ul>
+<li>use <strong>Prove Demon</strong> at start of day, with 5% chance of failure, boosted by
+by the Twin Witches <strong>Bless</strong></li>
+<li>cannot voluntarily enter</li>
+<li>have a 20% chance of death at start of day</li>
+<li>have an 80% chance of failure for all actions</li>
+</ul>
+</li>
+<li>Players may be tied up. When tied up, players have a 95% chance to fail all
+actions unless freed. Tying up requires 1 hour (3.75s at night, 5.625s at day),
+freeing is instant. Both require physical contact. Movement within zones is
+instant once you arrive. It requires 3 players to tie up one other player.</li>
+</ul>
+<p>Locations have a light level:</p>
+<ul>
+<li>Brightly lit (sunny, standard clouds, torches, lighting)</li>
+<li>Dimly lit (shadows) - 50% chance to detect other players</li>
+<li>Darkness (inside without lighting) - 10% chance to detect other players.
+50% chance of failure for all actions.</li>
+</ul>
+<p>Players have a sleep requirement. They must sleep at least 6 hours (20s at
+night or 34s at day) per day or suffer one level of exhaustion. Exhaustion is
+cleared after 6 hours of rest.
+Exhaustion levels are:</p>
+<ul>
+<li><strong>Tired</strong>: 30% chance of failure on all actions</li>
+<li><strong>Fatigued</strong>: 50% chance of failure on all actions</li>
+<li><strong>Exhausted</strong>: 80% chance of failure on all actions, 50% chance to rest for the
+entire period at start at night and start of day.</li>
+</ul>
+<p>There are up to 12 players per round, 5 demons, 5 slayers, and 2 neutral. There
+are also at least 20 non-player characters with no specialty. It is expected
+that players will attempt to disguise themselves as these NPCs.</p>
+<h1>Demons</h1>
+<h2>Main Objective</h2>
+<p>Assemble the 8 bones of the powerful ancient demon Gonthu to resurrect him,
+restarting his reign. If both <strong>Twin Witches</strong> die, the demons can still force
+a draw by killing all non-demon players.</p>
+<p>Must also prevent the humans from using <strong>Establish Protection</strong>.</p>
+<h2>Specialties</h2>
+<h3>Succubus</h3>
+<p>A powerful demon that presents itself in female form, known for her beauty
+and the magically enhanced lust when in her presence.</p>
+<h4>Day Abilities</h4>
+<ol>
+<li><strong>Allure</strong>: The target human can only hear your messages for 30 seconds
+or until night (whichever comes sooner). 1 day cooldown. Cannot be used on the
+same human on two consecutive days and requires physical contact. The target
+cannot hurt you while allured. O</li>
+<li><strong>Change Appearance</strong>: Assume the appearance and name of a non-player
+character. Requires physical access.</li>
+</ol>
+<h4>Night Abilities</h4>
+<ol>
+<li><strong>Seduce</strong>: Prevents the target human from taking any action, and shares a
+room with the target, leaving a demonic trace. Target must have been allured
+during the day. The target human is told who the succubus is. Neither player
+gets sleep during the night. Shares a cooldown with <strong>Change Appearance</strong>.</li>
+<li><strong>Change Appearance</strong>: Assume the appearance and name of a non-player
+character. Requires physical access. Shares a cooldown with <strong>Seduce</strong>.</li>
+</ol>
+<h3>Shapeshifter</h3>
+<p>A demon that is capable of transforming into various animals in order to serve
+the demons.</p>
+<h4>Day Abilities</h4>
+<ol>
+<li><strong>Werecat</strong>: Listen in on the target players location without announcing
+your presence. Requires physical access.</li>
+</ol>
+<h4>Night Abilities</h4>
+<ol>
+<li><strong>Werewolf</strong>: Using your sense of smell, search a target location for bones.
+Requires physical access. Grants bones in the target location. Has a 50% chance
+of not being detected by other players at that location, except for other
+werewolfs. While a werewolf, has <strong>Darkness Master</strong>: <em>Passive</em> No penalties
+from light levels.</li>
+</ol>
+<h3>Spectre</h3>
+<h4>Day Abilities</h4>
+<ol>
+<li><strong>Sense</strong>: Detect if there are any humans in the target location, and sense
+any humans that have traversed through the location on the day used.</li>
+</ol>
+<h4>Night Abilities</h4>
+<ol>
+<li><strong>Attack</strong>: Attack any players in the given location. If there are any demons
+in the given location, the action fails and everyone in the location is told
+who the Spectre is. Otherwise, the location is given a demonic trace and:</li>
+</ol>
+<ul>
+<li>If there are no humans, nothing else happens</li>
+<li>If there is 1 human:
+<ul>
+<li>the Spectre gets an additional 3% chance to fail this action</li>
+<li>on failure, the human is told who the Spectre is</li>
+<li>on success, the human dies</li>
+</ul>
+</li>
+<li>If there are 2 humans:
+<ul>
+<li>the Spectre gets an additional 25% chance to fail this action</li>
+<li>on failure, the Spectre dies.</li>
+<li>on success, the humans die</li>
+</ul>
+</li>
+<li>If there are 3+ humans:
+<ul>
+<li>the Spectre gets an additional 25% chance to fail <em>per human</em> (multiplicative)</li>
+<li>on failure, the Spectre dies</li>
+<li>on success, each human has a 90% chance of death, otherwise being alerted
+to who the Spectre is.</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li><strong>Sense</strong>: Detect if there are any humans in the target location, and sense
+any humans that have traversed through the location on the night used.</li>
+</ol>
+<h3>Beelzebub</h3>
+<p>A beelzebub is a false god or idolator, and typically acts as a decision maker
+for the demons and spreads information.</p>
+<h4>Day Abilities</h4>
+<ol>
+<li><strong>Disguise</strong>: <em>Passive</em> Does not have a demonic trace. May enter consecrated
+locations.</li>
+<li><strong>Darkness Adept</strong>: <em>Passive</em> Can see in all rooms as if they were one
+light level higher (no change for Brightly lit)</li>
+</ol>
+<h4>Night Abilities</h4>
+<ol>
+<li><strong>Disguise</strong>: <em>Passive</em> Does not have a demonic trace. May enter consecrated
+locations.</li>
+<li><strong>Command</strong>: Forces the target to make an action, if it is possible for the
+player to do so. If the player cannot, the target is told Beelzebub's
+specialization.</li>
+<li><strong>Darkness Adept</strong>: <em>Passive</em> Can see in all rooms as if they were one
+light level higher (no change for Brightly lit)</li>
+</ol>
+<h3>Moving Shadow</h3>
+<p>The moving shadow cannot move into the light; it is killed if in a location
+that has a light level of Dimly lit or higher. It waits, haunting anyone that enters
+its location. Automatic lighting does not work in locations with a Moving Shadow.
+Upon approval of the Moving Shadow, dead demons may assist it by using the Haunt
+command as if they were the moving shadow.</p>
+<p>At worst, a moving shadow acts as another source of <strong>Curse</strong> and as a way to
+communicate with the dead. At best, it can cause humans to kill each other. The
+moving shadow strongly incentivizes meeting outdoors or in consecrated locations.</p>
+<h4>Day Abilities</h4>
+<ol>
+<li><strong>Haunt</strong>: Invade the conscious of the target player. Send
+him a message as if they were from another player or from the system. Demons
+are told that it is a moving shadow, allowing for targeted communication.</li>
+<li><strong>Enhanced Haunt</strong>: Only usable on humans with <strong>Curse</strong> during the day. See
+night ability for usage.</li>
+<li><strong>Darkness Master</strong>: <em>Passive</em> No penalties from light levels</li>
+<li><strong>Restless</strong>: <em>Passive</em> Is not affected by exhaustion.</li>
+<li><strong>Commune</strong>: <em>Passive</em> Can speak with dead demons.</li>
+<li><strong>Bringer of Darkness</strong>: <em>Passive</em> Automatic lighting does not work in
+the Moving Shadows location.</li>
+</ol>
+<h4>Night Abilities</h4>
+<ol>
+<li><strong>Enhanced Haunt</strong>: Same as haunt, except that, for humans, all messages (from
+anything other than moving shadows) are sent to the Moving Shadow instead of the
+human, including day/night cycles. Also applies <strong>Curse</strong> (see Twin Witch) if
+they do not already have it. Commands either have controls for overrides or
+are not affected, to prevent them being used to detect a Moving Shadow. While a
+moving shadow is able to use Enhanced Haunt on a human, the human is told the
+room is Brightly Lit.</li>
+<li><strong>Darkness Master</strong>: <em>Passive</em> No penalties from light levels</li>
+<li><strong>Restless</strong>: <em>Passive</em> Is not affected by exhaustion.</li>
+<li><strong>Commune</strong>: <em>Passive</em> Can speak with dead demons.</li>
+<li><strong>Bringer of Darkness</strong>: <em>Passive</em> Automatic lighting does not work in
+the Moving Shadows location.</li>
+</ol>
+<h3>Twin Witch</h3>
+<p>The twin witch is guaranteed and always starts in pairs, with knowledge of who
+the other is. The twin witches are capable of resurrecting Gonthu when they have
+all their bones and serve as a powerful offensive with <strong>Curse</strong> that is hard to
+trace since it only requires a name. Additionally, <strong>Bless</strong> can serve as an
+incredibly strong bluffing tool since it helps the target resist <strong>Prove Demon</strong>
+from consecrated locations.</p>
+<h4>Day Abilities</h4>
+<ol>
+<li><strong>Resurrect</strong>: Requires a complete set of bones for Gonthu. Starts the reign
+of Gonthu (requires 3 hours, 16.875s). Demons win if you do this.</li>
+<li><strong>Curse</strong>: Curses the target human, giving them a 2% chance to die
+on start of day, doubling each day. Shares a cooldown with <strong>Bless</strong>. Does <em>not</em>
+require physical access. The target is alerted on the 5th day of a curse (next
+day is 64% chance of death) or 50% of the time when entering consecrated
+locations (with a maximum of one roll per cycle).
+They also have the same chance of failure as the followings days death chance.</li>
+<li><strong>Bless</strong>: Blesses the target demon. Starts with 0 uses available, shares
+a cooldown with <strong>Curse</strong>. Requires physical access, and grants the target
+demon 25% resistance to failure (subtractive; if they had a net chance of
+failure of 65% they will have a net chance of failure of 90% after). A demon
+may only blessed once, may target the twin witch.</li>
+</ol>
+<h4>Night Abilities</h4>
+<ol>
+<li><strong>Sacrifice</strong>: The target tied up human is sacrificed for Gonthu, killing
+the target and tells you the location of a piece of Gonthu's body that you have
+not infused yet.</li>
+<li><strong>Infuse</strong>: The target bone of Gonthu is infused with power. Bones may only
+be infused once per witch. For each infused bone, <strong>Curse</strong> starts one day later
+and the witch is given one use of <strong>Bless</strong>. Both twin witches may infuse a bone,
+gaining the effect separately.</li>
+</ol>
+<h3>Demogorgon</h3>
+<p>Acting as a defensive force, typically assigned to the twin witch, the
+demogorgon is too strong to attack head on and provides essential escape
+abilities to key demons. The demogorgon still has to sleep</p>
+<h4>Day Abilities</h4>
+<ol>
+<li><strong>Alert</strong>: <em>Passive</em> All attacks on the demogorgons location only attack
+the demogorgon. Works even when sleeping.</li>
+<li><strong>Strong</strong>: <em>Passive</em> All attacks on a demogorgon have an additional 25% chance
+of failure per demon in the demogorgons location, including the demogorgon,
+stacking multiplicatively. Does not work when sleeping.</li>
+<li><strong>Teleport</strong>: Move the demogorgon and any demons in the same location to any <strong>Outskirts</strong>
+location. Is not affected by the normal failure chance from being tied up.</li>
+</ol>
+<h4>Night Abilities</h4>
+<ol>
+<li><strong>Alert</strong>: <em>Passive</em> All attacks on the demogorgons location only attack
+the demogorgon. Works even when sleeping.</li>
+<li><strong>Strong</strong>: <em>Passive</em> All attacks on a demogorgon have an additional 25% chance
+of failure per demon in the demogorgons location, including the demogorgon,
+stacking multiplicatively. Does not work when sleeping.</li>
+<li><strong>Teleport</strong>: Move the demogorgon and any demons in the same location to any <strong>Outskirts</strong>
+location. Is not affected by the normal failure chance from being tied up.</li>
+<li><strong>Sacrifice</strong>: The demogorgon gains <strong>Restless</strong>: <em>Passive</em> is not affected
+by exhaustion. However, the demogorgon dies on the start of the 4th day following
+this ability (including the next morning). Sacrifice can only be used once.</li>
+</ol>
+<h3>Cursed Soul</h3>
+<p>The cursed soul acts as an alternative method to the Shapeshifter for acquiring
+bones. The cursed soul does not have the similiar detection reduction, but
+<strong>Hustle</strong> can make him harder to catch.</p>
+<h4>Day Abilities</h4>
+<ol>
+<li><strong>Search</strong>: Search the target location for any bones of Gonthu. Requires
+physical contact.</li>
+<li><strong>Hustle</strong>: The next movement happens at double speed. If tied, breaks
+free without the failure chance from tied up, but has an additional 50% chance
+to fail.</li>
+</ol>
+<h4>Night Abilities</h4>
+<ol>
+<li><strong>Search</strong>: Search the target location for any bones of Gonthu. Requires
+physical contact.</li>
+<li><strong>Darkness Adept</strong>: <em>Passive</em> Can see in all rooms as if they were one light
+level higher (no change for Brightly lit)</li>
+</ol>
+</body>
+</html>

@@ -18,9 +18,12 @@ local UnattachAdventurerOnExitListener = {}
 function UnattachAdventurerOnExitListener:get_events() return { ExitEvent = true } end
 function UnattachAdventurerOnExitListener:is_prelistener() return false end
 function UnattachAdventurerOnExitListener:is_postlistener() return true end
+function UnattachAdventurerOnExitListener:compare(other, pre)
+  if other == 'SayFarewellListener' then return 1 end
+  return 0
+end
 function UnattachAdventurerOnExitListener:process(game_ctx, local_ctx, networking, event)
   if event.id == nil or event.id == 0 then return end -- Don't do this for the host
-
   adventurers.unset_adventurer(game_ctx, event.id)
 end
 

@@ -16,6 +16,7 @@ local DayNightListener = {}
 function DayNightListener:get_events() return { TimeEvent = true } end
 function DayNightListener:is_prelistener() return false end
 function DayNightListener:is_postlistener() return true end
+function DayNightListener:compare(other, pre) return 0 end
 function DayNightListener:process(game_ctx, local_ctx, networking, event)
   if game_ctx.day == nil then game_ctx.day = { is_day = true, time_to_next_cycle_ms = 90000 } end
 

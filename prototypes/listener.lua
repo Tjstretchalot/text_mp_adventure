@@ -16,6 +16,14 @@ prototype.register('listener', {
   -- @treturn boolean true if handles after the events, false otherwise
   'is_postlistener',
 
+  -- Returns -1 if this listener should be invoked before the given listener,
+  -- 1 if this listener should be invoked after the given listener, or 0 if
+  -- this listener is not affected by the order of the given listener.
+  -- @tparam string class class name of the listener
+  -- @tparam boolean pre true if we're before the event, false otherwise
+  -- @treturn number the order for this listener in comparison to the given one
+  'compare',
+
   --- Process an event that just occurred or is about to occur
   --
   -- @tparam GameContext game_ctx the state of the game

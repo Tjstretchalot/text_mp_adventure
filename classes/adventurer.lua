@@ -18,7 +18,7 @@ function Adventurer:serialize()
 end
 
 function Adventurer.deserialize(serd)
-  return Adventurer:new(serd)
+  return Adventurer._wrapped_class:new(serd)
 end
 
 function Adventurer:context_changed(game_ctx)
