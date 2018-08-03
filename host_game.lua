@@ -17,6 +17,7 @@ require('classes/local_context/serializers/all')
 require('classes/game_context/serializers/all')
 
 local TimeEvent = require('classes/events/time')
+local NewGameEvent = require('classes/events/new_game')
 
 -- endregion
 
@@ -26,10 +27,13 @@ local local_ctx = LocalContext:new({id = 0})
 local listener_processor = ListenerProcessor:new()
 local command_processor = CommandProcessor:new()
 
+local_ctx.listener_processor = listener_processor
+
 -- region loading helpers
 local function create_new()
   game_ctx = GameContext:new()
   event_queue = EventQueue:new()
+  event_queue:enqueue(NewGameEvent:new())
 end
 
 local function load()

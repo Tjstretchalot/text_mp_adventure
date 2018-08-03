@@ -6,6 +6,7 @@ local class = require('classes/class')
 local prototype = require('prototypes/prototype')
 
 local adventurers = require('functional/game_context/adventurers')
+local communication = require('functional/communication')
 
 require('prototypes/event')
 require('prototypes/serializable')
@@ -32,6 +33,8 @@ function TalkEvent:process(game_ctx, local_ctx)
 
   if self.id ~= -1 then
     local advn = adventurers.get_adventurer(game_ctx, self.id)
+    if not communication.local_can_hear(game_ctx, local_ctx, advn.id) then return end
+    
     if advn then
       io.write('<' .. advn.name .. '>' .. ': ')
     else
