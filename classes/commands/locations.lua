@@ -80,7 +80,7 @@ local function handle_add(game_ctx, local_ctx, text, args)
   end
 
   local evnts = {}
-  evnts[#evnts + 1] = TalkEvent:new{message = text, id = local_ctx.id}
+  evnts[#evnts + 1] = TalkEvent:new{message = text, name = adventurers.get_local_name(game_ctx, local_ctx)}
   evnts[#evnts + 1] = LocationEvent:new{type = 'new', location = { name = loc_name, description = loc_desc } }
   return true, evnts
 end

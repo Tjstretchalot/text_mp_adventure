@@ -66,8 +66,13 @@ local function add(self, game_ctx, local_ctx, text, args)
     end
   end
 
+  if name == 'server' then
+    print_help(text)
+    return
+  end
+
   local evnts = {}
-  evnts[#evnts + 1] = TalkEvent:new{message = text, id = local_ctx.id}
+  evnts[#evnts + 1] = TalkEvent:new{message = text, name = adventurers.get_local_name(game_ctx, local_ctx)}
   evnts[#evnts + 1] = AdventurerEvent:new{type = 'add', name = name}
 
   return true, evnts
@@ -83,9 +88,11 @@ local function set(self, game_ctx, local_ctx, text, args)
   if not player_id or player_id < 0 then return print_help(text) end
   if not adv_ind or adv_ind < 1 or adv_ind > #game_ctx.adventurers then return print_help(text) end
 
+  local adv_name = game_ctx.adventurers[adv_ind].name
+
   local evnts = {}
-  evnts[#evnts + 1] = TalkEvent:new{message = text, id = local_ctx.id}
-  evnts[#evnts + 1] = AdventurerEvent:new{type = 'set', player_id = player_id, adventurer_ind = adv_ind}
+  evnts[#evnts + 1] = TalkEvent:new{message = text, name = adventurers.get_local_name(game_ctx, local_ctx)}
+  evnts[#evnts + 1] = AdventurerEvent:new{type = 'set', player_id = player_id, adventurer_name = adv_name}
 
   return true, evnts
 end
@@ -98,7 +105,7 @@ local function unset(self, game_ctx, local_ctx, text, args)
   if not player_id or player_id < 0 then return print_help(text) end
 
   local evnts = {}
-  evnts[#evnts + 1] = TalkEvent:new{message = text, id = local_ctx.id}
+  evnts[#evnts + 1] = TalkEvent:new{message = text, name = adventurers.get_local_name(game_ctx, local_ctx)}
   evnts[#evnts + 1] = AdventurerEvent:new{type = 'unset', player_id = player_id}
 
   return true, evnts

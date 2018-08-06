@@ -8,7 +8,7 @@ local array = require('functional/array')
 
 local inspect = {}
 
-function inspect.pretty_print_table(tabl, nest_level, indent_str, spotted)
+function inspect.pretty_print_table(tabl, nest_level, indent_str, spotted, serialize)
   nest_level = nest_level or 0
   indent_str = indent_str or '  '
   spotted = spotted or { [tabl] = true }
@@ -31,7 +31,7 @@ function inspect.pretty_print_table(tabl, nest_level, indent_str, spotted)
       else
         spotted[v] = true
         io.write(tostring(v) .. ' = {\n')
-        inspect.pretty_print_table(v, nest_level + 1, indent_str, spotted)
+        inspect.pretty_print_table(v, nest_level + 1, indent_str, spotted, serialize)
         for i=1, nest_level do
           io.write(indent_str)
         end
@@ -48,7 +48,9 @@ function inspect.pretty_print_table(tabl, nest_level, indent_str, spotted)
   end
 end
 
-function inspect.inspect(thing)
+function inspect.inspect(thing, serialize)
+  if serialize == nil then serialize = true end
+
   local spotted = {}
   if type(thing) == 'table' then
     if thing.class_name then
@@ -58,15 +60,15 @@ function inspect.inspect(thing)
       else
         print('  supports nothing')
       end
-      if thing._class and array.contains(thing.prototypes, 'serializable') then
+      if serialize and thing._class and array.contains(thing.prototypes, 'serializable') then
         print('  serialized: ')
-        inspect.pretty_print_table(thing:serialize(), 2, nil, spotted)
+        inspect.pretty_print_table(thing:serialize(), 2, nil, spotted, serialize)
       end
       print('  standard dump: ')
-      inspect.pretty_print_table(thing, 2, nil, spotted)
+      inspect.pretty_print_table(thing, 2, nil, spotted, serialize)
     else
       print('generic ' .. tostring(thing))
-      inspect.pretty_print_table(thing, 1)
+      inspect.pretty_print_table(thing, 1, nil, nil, serialize)
     end
   else
     print(tostring(thing))

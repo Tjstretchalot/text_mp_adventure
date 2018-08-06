@@ -19,8 +19,8 @@ function RestrictTalkToSameLocationListener:is_prelistener() return false end
 function RestrictTalkToSameLocationListener:is_postlistener() return true end
 function RestrictTalkToSameLocationListener:compare(other, pre) return 0 end
 function RestrictTalkToSameLocationListener:process(game_ctx, local_ctx, networking, event)
-  local from_advn = adventurers.get_adventurer(game_ctx, event.from_id)
-  local to_advn = adventurers.get_adventurer(game_ctx, event.to_id)
+  local from_advn = game_ctx.adventurers[event.from_id]
+  local to_advn = game_ctx.adventurers[event.to_id]
 
   for _, from_loc in ipairs(from_advn.locations) do
     for _, to_loc in ipairs(to_advn.locations) do

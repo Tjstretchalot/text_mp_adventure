@@ -14,11 +14,12 @@ local communication = {}
 -- @tparam LocalContext local_ctx the local state
 -- @tparam number adv_id the id of the adventurer we want to hear
 function communication.local_can_hear(game_ctx, local_ctx, adv_id)
-  local local_advn = adventurers.get_local_adventurer(game_ctx, local_ctx)
-  if not local_advn then return false end
+  if not local_ctx.id then return false end
+  local local_advn_id = game_ctx.adventurers_by_id[local_ctx.id]
+  if not local_advn_id then return false end
 
   local evnt = CommunicationEvent:new({
-    from_id = local_advn.id,
+    from_id = local_advn_id,
     to_id = adv_id
   })
 
@@ -26,5 +27,7 @@ function communication.local_can_hear(game_ctx, local_ctx, adv_id)
   evnt:process(game_ctx, local_ctx)
   local_ctx.listener_processor:invoke_post_listeners(game_ctx, local_ctx, nil, evnt)
 
-  return evnt.result  
+  return evnt.result
 end
+
+return communication

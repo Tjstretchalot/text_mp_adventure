@@ -6,6 +6,7 @@ local locations = {}
 --- Add a new location to the game context
 -- @tparam GameContext game_ctx the game context
 -- @tparam Location loc the location to add
+-- @treturn Location loc
 function locations.add_location(game_ctx, loc)
   if not game_ctx.locations then game_ctx.locations = {} end
 
@@ -14,6 +15,7 @@ function locations.add_location(game_ctx, loc)
   end
 
   game_ctx.locations[loc.name] = loc
+  return loc
 end
 
 return locations

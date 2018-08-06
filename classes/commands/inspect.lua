@@ -18,15 +18,16 @@ local InspectCommand = {}
 local function print_help(text)
   print('\27[K\r' .. text)
   print('/inspect')
-  print('  <code literal>')
+  print('  <code literal> [--serialize]')
   print('    passes the code as a string literal to the inspect function')
+  print('    if --serialize is added then it also serializes serializables')
   return true, {}
 end
 
-local function safish_inspect(game_ctx, local_ctx, text, code)
+local function safish_inspect(game_ctx, local_ctx, text, code, serialize)
   print('\27[K\r' .. text)
   xpcall(function()
-    loadstring('return function(game_ctx, local_ctx) require(\'functional/inspect\').inspect(' .. code .. ') end')()(game_ctx, local_ctx)
+    loadstring('return function(game_ctx, local_ctx) require(\'functional/inspect\').inspect(' .. code .. ', ' .. tostring(serialize) .. ') end')()(game_ctx, local_ctx)
   end, function(err)
     print(err)
     print(debug.traceback())
@@ -46,11 +47,20 @@ function InspectCommand:parse(game_ctx, local_ctx, text)
       return true, {}
     end
 
-    if #args ~= 2 then
+    if #args < 2 or #args > 3 then
       return print_help(text)
     end
 
-    return safish_inspect(game_ctx, local_ctx, text, args[2])
+    local serialize = false
+    if #args == 3 then
+      if args[3] == '--serialize' then
+        serialize = true
+      else
+        print_help(text)
+      end
+    end
+
+    return safish_inspect(game_ctx, local_ctx, text, args[2], serialize)
   end
 
   return false, nil

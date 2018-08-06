@@ -14,6 +14,7 @@ local Adventurer = {}
 
 -- region serializable
 function Adventurer:serialize()
+  -- locations is an array of strings so no special serialization is necessary
   return { name = self.name, locations = array.public_primitives_deep_copy(self.locations) }
 end
 
@@ -22,11 +23,6 @@ function Adventurer.deserialize(serd)
 end
 
 function Adventurer:context_changed(game_ctx)
-  local fixed_locs = {}
-  for k, loc in ipairs(self.locations) do
-    fixed_locs[k] = game_ctx.locations[loc.name]
-  end
-  self.locations = fixed_locs
 end
 -- endregion
 
@@ -40,8 +36,20 @@ function Adventurer:init()
   end
 end
 
-function Adventurer:greet()
-  print('Hello! I am called ' .. tostring(self.name))
+--- Set the location of the adventurer to the new location,
+-- replacing the old location if there is one.
+-- @tparam string|{string,...} the location or locations to set it to
+function Adventurer:replace_location(location)
+  if not location then error('argument nil: location') end
+
+  if type(location) == 'string' then
+    self.locations = { location }
+  else
+    self.locations = {}
+    for _,v in ipairs(location) do
+      table.insert(self.locations, v)
+    end
+  end
 end
 
 prototype.support(Adventurer, 'serializable')

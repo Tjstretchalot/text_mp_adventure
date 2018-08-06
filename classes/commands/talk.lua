@@ -16,7 +16,11 @@ local TalkCommand = {}
 function TalkCommand.priority() return 'generic' end
 
 function TalkCommand:parse(game_ctx, local_ctx, text)
-  return true, { TalkEvent:new{message = text, id = local_ctx.id} }
+  if not local_ctx.id then return false, {} end
+  local loc_advn_id = game_ctx.adventurers_by_id[local_ctx.id]
+  if not loc_advn_id then return false, {} end
+
+  return true, { TalkEvent:new{message = text, name = game_ctx.adventurers[loc_advn_id].name} }
 end
 
 prototype.support(TalkCommand, 'command')

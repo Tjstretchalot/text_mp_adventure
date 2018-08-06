@@ -31,7 +31,7 @@ function SayFarewellListener:process(game_ctx, local_ctx, networking, event)
   end
 
   networking:broadcast_events(game_ctx, local_ctx, {
-    TalkEvent:new{message = 'Farewell ' .. name .. '!', id = -1}
+    TalkEvent:new{message = 'Farewell ' .. name .. '!', name = 'server'}
   })
 end
 

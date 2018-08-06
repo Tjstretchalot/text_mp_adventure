@@ -23,18 +23,18 @@ function TalkEvent:init()
     error('Talk events need a message!', 3)
   end
 
-  if not self.id then
-    error('Talk events need an id!', 3)
+  if not self.name then
+    error('Talk events need an adventurer name (via name) or reserved name \'server\'!', 3)
   end
 end
 
 function TalkEvent:process(game_ctx, local_ctx)
   io.write('\27[2K\r')
 
-  if self.id ~= -1 then
-    local advn = adventurers.get_adventurer(game_ctx, self.id)
-    if not communication.local_can_hear(game_ctx, local_ctx, advn.id) then return end
-    
+  if self.name ~= 'server' then
+    local advn, advn_id = adventurers.get_by_name(game_ctx, self.name)
+    if not communication.local_can_hear(game_ctx, local_ctx, advn_id) then return end
+
     if advn then
       io.write('<' .. advn.name .. '>' .. ': ')
     else

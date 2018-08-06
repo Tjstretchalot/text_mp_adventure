@@ -21,6 +21,8 @@ local NewGameEvent = require('classes/events/new_game')
 
 -- endregion
 
+math.randomseed(os.time())
+
 local game_ctx, event_queue
 
 local local_ctx = LocalContext:new({id = 0})

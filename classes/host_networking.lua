@@ -41,7 +41,7 @@ end
 local function client_socket_error(self, client, err)
   local index = array.index_of(self.clients, client)
   table.remove(self.clients, index)
-  self:broadcast_events(game_ctx, local_ctx, { TalkEvent:new{message = 'Client ' .. client.id .. ' disconnected (' .. err .. ')', id = -1}, ExitEvent:new{id = client.id} })
+  self:broadcast_events(game_ctx, local_ctx, { TalkEvent:new{message = 'Client ' .. client.id .. ' disconnected (' .. err .. ')', name = 'server'}, ExitEvent:new{id = client.id} })
 end
 
 local function handle_client(self, game_ctx, local_ctx, event_queue, cl)
@@ -97,7 +97,7 @@ local function try_accept_client(self, game_ctx, local_ctx, event_queue)
   if not client then
     if err == 'timeout' then return end
 
-    self:broadcast_events(game_ctx, local_ctx, { TalkEvent:new{message = 'Server socket died; err = ' .. err, id = -1}, ExitEvent:new() })
+    self:broadcast_events(game_ctx, local_ctx, { TalkEvent:new{message = 'Server socket died; err = ' .. err, name = 'server'}, ExitEvent:new() })
   end
 
   print('Client connecting..')
@@ -111,12 +111,8 @@ local function try_accept_client(self, game_ctx, local_ctx, event_queue)
     return
   end
 
-  local new_id
-  if #self.clients > 0 then
-    new_id = self.clients[#self.clients].id + 1
-  else
-    new_id = 1
-  end
+  local new_id = (game_ctx.client_id_counter or 0) + 1
+  game_ctx.client_id_counter = new_id
 
   local evnt = AssignLocalIDEvent:new{id = new_id}
 

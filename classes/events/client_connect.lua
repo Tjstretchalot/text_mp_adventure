@@ -1,5 +1,6 @@
 --- This event is broadcast when a client connects to the server.
--- This event serves as a marker for listeners
+-- This event serves as a marker for listeners, but it also maintains
+-- the client_id_counter for consistency.
 -- @classmod ClientConnectEvent
 
 -- region imports
@@ -23,6 +24,11 @@ function ClientConnectEvent:init()
 end
 
 function ClientConnectEvent:process(game_ctx, local_ctx)
+  if local_ctx.id ~= 0 then
+    if (not game_ctx.client_id_counter) or game_ctx.client_id_counter < self.id then
+      game_ctx.client_id_counter = self.id
+    end
+  end
 end
 
 prototype.support(ClientConnectEvent, 'event')

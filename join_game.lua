@@ -18,6 +18,8 @@ require('classes/local_context/serializers/all')
 require('classes/game_context/serializers/all')
 -- endregion
 
+math.randomseed(os.time())
+
 local host = console.string('Host?')
 local port = console.numeric('Port?')
 
@@ -29,6 +31,8 @@ local local_ctx = LocalContext:new()
 local event_queue = EventQueue:new()
 local command_processor = CommandProcessor:new()
 local list_processor = ListenerProcessor:new()
+
+local_ctx.listener_processor = list_processor
 
 for _, event in ipairs(initial_events) do
   list_processor:invoke_pre_listeners(game_ctx, local_ctx, networking, event)
