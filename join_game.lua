@@ -1,5 +1,6 @@
 --- Joins a game hosted by another player
 -- region imports
+require('seed_random')
 local json = require('json')
 local array = require('functional/array')
 local inspect = require('functional/inspect').inspect
@@ -17,8 +18,6 @@ local ClientNetworking = require('classes/client_networking')
 require('classes/local_context/serializers/all')
 require('classes/game_context/serializers/all')
 -- endregion
-
-math.randomseed(os.time())
 
 local host = console.string('Host?')
 local port = console.numeric('Port?')

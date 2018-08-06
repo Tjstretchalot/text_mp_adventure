@@ -5,7 +5,8 @@ local result = {
     'Ava',
     'Anna',
     'April',
-    'Aiden'
+    'Aiden',
+    'Amy'
   },
   ['ad'] = {
     'Abigail',
@@ -19,8 +20,6 @@ local result = {
     'Allison',
     'Alexandra',
     'Alex',
-    'Amy',
-    'Audrey',
     'Alice',
     'Arianna',
     'Ana',
@@ -35,6 +34,7 @@ local result = {
     'Anderson'
   },
   ['ə'] = {
+    'Audrey',
     'Amanda',
     'Alexis',
     'Alexa',
@@ -44,13 +44,51 @@ local result = {
     'Amelia',
     'Adele',
     'Alicia',
-    'Azalea'
+    'Azalea',
+    'Emilia',
+    'Electra',
+    'Eleisha',
+    'Elisha',
+    'Elizabeth',
+    'Ellena',
+    'Emilie'
   },
   ['är'] = {
     'Arther'
   },
   ['ô'] = {
     'Austin',
+  },
+  ['ē'] = {
+    'Evie'
+  },
+  ['e'] = {
+    'Ellie',
+    'Elliot',
+    'Emma',
+    'Evan',
+    'Evelyn',
+    'Elsa',
+    'Emmie',
+    'Eddie',
+    'Edgar',
+    'Edin',
+    'Edmund',
+    'Elijah',
+    'Ellenor',
+    'Elvis',
+    'Elloise',
+    'Emer',
+    'Emi',
+    'Enrico'
+  },
+  ['i'] = {
+    'Isabel',
+    'Isabella',
+    'Imani',
+    'Indigo',
+    'Indiana',
+    'Izzy'
   }
 }
 

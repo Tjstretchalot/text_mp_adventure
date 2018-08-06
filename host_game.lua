@@ -1,4 +1,5 @@
 -- region imports
+require('seed_random')
 local json = require('json')
 local array = require('functional/array')
 local inspect = require('functional/inspect').inspect
@@ -20,8 +21,6 @@ local TimeEvent = require('classes/events/time')
 local NewGameEvent = require('classes/events/new_game')
 
 -- endregion
-
-math.randomseed(os.time())
 
 local game_ctx, event_queue
 
