@@ -10,18 +10,20 @@ local arg_parser = {}
 -- /adventurers --list
 -- -> { '--list' }
 -- @tparam string text the text to parse
--- @treturn {string,...} the arguments (not the actual command)
+-- @treturn {string,...},string the arguments (not the actual command) followed by the command
 function arg_parser.parse(text)
   local first = true
+  local command
   local res = {}
   for arg in text:gmatch('[^ ]+') do
     if first then
       first = false
+      command = arg
     else
       res[#res + 1] = arg
     end
   end
-  return res
+  return res, command
 end
 
 local stringbyte = string.byte

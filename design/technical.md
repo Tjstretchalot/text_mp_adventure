@@ -3,9 +3,7 @@
 The game is implemented as a client-server lockstep multiplayer system running
 on events. The local player can provide string input, delimited by newlines,
 which is sent to the **command processor**. The command processor first sends this
-to 'listener' commands, then 'explicit', 'implicit', and 'generic' commands in that order.
-Each command has the opportunity to handle the input, which prevents any further
-commands from processing the events, and may optionally raise events.
+to 'listener' commands, then 'explicit', 'implicit', and 'generic' commands in that order. Each command has the opportunity to handle the input, which prevents any further commands from processing the events, and may optionally raise events.
 
 The events are then sent to the **networking manager**. If the local player is a client,
 this simply passes it onto the server who sends it out to all the clients. If it
@@ -83,10 +81,12 @@ of each specialization modify the adventurer, even flagging them as dead when
 appropriate. They also might modify locations, for example leaving a demonic
 trace when they enter a location.
 
+The specialization commands are split from the generic commands in the commands array through use of the SpecializationCommandProcessor, which handles only 'explicit' commands but enforces slightly more rigid conventions, such as help text. The listeners are not differentiated and are simply always in the listener pool.
+
 Many commands effects are modified by the receiving party; this is often achieved
 through complex listener chains and custom events. For example, chance to fail
 is a very common modifier, but it is often implemented subtly different. Here
-is a fctional way that Oracle's ability **Sample Essence** might resolve on a client
+is a fictional way that Oracle's ability **Sample Essence** might resolve on a client
 from the perspective of someone trying to implement it (skipping all internal
 networking), assuming somehow the oracle is fatigued, blessed, and in a room
 with a Recruit.
@@ -107,8 +107,11 @@ it does nothing.
 a recruit, so it adds a 1% fail resistance to the event with no callbacks.
 - `SampleEssenceEvent:process` now has a fully resolved `AbilityEvent`. It uses
 `FailHelper` to determine that the ability did not fail.
+- `SampleEssenceEvent:process` Notes that this information must be networked, so it raises a SampleEssenceEvent event that indicates failure has already been determined. (This may instead be done with a SampleEssenceSuccessEvent and SampleEssenceFailureEvent if desired). It must be done prior to the post-listeners as this allows other events to decide if they want to network events before or after the SampleEssenceEvent.
 - `SampleEssenceEvent:process` calls the post-listeners for the `AbilityEvent`
- with failed set to false.
+ with failed set to false. These may raise additional events.
+- `SampleEssenceEvent:process` completes
+- `SampleEssenceEvent:process` is called, now knowing the event succeeded
 - `SampleEssenceEvent:process` adds John to the sampled essences of the user, then
 issues a non-networked `SystemInformationEvent` for itself, the target, and anyone
 in the location. Some or all of these events might be suppressed via moving shadows.
@@ -119,3 +122,6 @@ the SampleEssenceCommand would be blind to this. Non-networked events act as
 an easy way to use the listener system in a way very similar to the modifier
 system you often see in real time strategy games. The performance penalty is
 not relevant in a text-based game.
+
+Note that it is expected to do an additional circle at the beginning of the
+resolve to ensure the result is determined by the server rather than the client.

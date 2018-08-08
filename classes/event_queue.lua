@@ -46,6 +46,7 @@ function EventQueue:context_changed(game_ctx)
     if event.context_changed then
       event:context_changed(game_ctx)
     end
+    event = _next()
   end
 end
 -- endregion
