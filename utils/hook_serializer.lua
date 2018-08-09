@@ -81,6 +81,12 @@ local function inject_add_context_changed_hook(self, name, hook)
 end
 
 local function inject_serialize(self)
+  if self._class._serialize_pre_callbacks then
+    for _, callback in ipairs(self._class._serialize_pre_callbacks) do
+      callback()
+    end
+  end
+
   local copy = {}
   for k,v in pairs(self) do
     if type(k) == 'string' and k:sub(1, 1) ~= '_' then

@@ -41,5 +41,9 @@ function TestSpecialization:get_specialization_passives()
   return self._passives
 end
 
+function TestSpecialization:get_random_starting_location()
+  return 'church'
+end
+
 prototype.support(TestSpecialization, 'specialization')
 return class.create('TestSpecialization', TestSpecialization)

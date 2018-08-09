@@ -25,5 +25,13 @@ prototype.register('specialization', {
    -- the help text.
    -- Additional passives should be added to the adventurer directly.
    -- @treturn {SpecializationPassive,...} the passives for this spec
-   'get_specialization_passives'
+   'get_specialization_passives',
+
+   --- Decide the starting location for players with this specialization.
+   -- Note that this will only be called server-side so using math.random
+   -- is perfectly okay.
+   -- @tparam GameContext game_ctx the game context
+   -- @tparam LocalContext local_ctx the local context
+   -- @treturn Location the location to start in 
+   'get_random_starting_location'
 })
