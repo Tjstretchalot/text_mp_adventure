@@ -46,7 +46,7 @@ namespace IsKeyAvailableFramework
         {
             while (Console.KeyAvailable)
             {
-                var key = Console.ReadKey(true);
+                var key = Console.ReadKey(true); 
                 var keyCode = (int)key.Key;
 
                 Console.Write(keyCode.ToString());
