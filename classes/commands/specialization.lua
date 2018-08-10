@@ -52,9 +52,9 @@ local function handle_command(comm, game_ctx, local_ctx, args)
   return succ, events
 end
 
-local function print_specialization_info(game_ctx, local_ctx, args, spec)
-  print('\27[K\r')
-
+local function print_specialization_info(game_ctx, local_ctx, text, args, spec)
+  print('\27[K\r' .. text)
+  print('  Usage: /specialization [--lore] [--specialization name] [--ability name]')
   local lore = false
   for k,v in ipairs(args) do
     if k ~= 1 then
@@ -67,6 +67,15 @@ local function print_specialization_info(game_ctx, local_ctx, args, spec)
           if pass:get_name():lower() == tmp then
             print('\27[2mPassive\27[0m: ' .. pass:get_name())
             word_wrap.print_wrapped(pass:get_long_description(), 2)
+            return
+          end
+        end
+
+        -- perhaps an ability?
+        for _, comm in ipairs(spec:get_specialization_commands()) do
+          if comm:get_command():lower() == tmp then
+            print('/' .. comm:get_command())
+            word_wrap.print_wrapped(comm:get_long_description(), 2)
             return
           end
         end
@@ -126,7 +135,7 @@ function SpecializationCommand:parse(game_ctx, local_ctx, text)
   local commands = spec:get_specialization_commands()
 
   if parsed[1] == '/specialization' then
-    print_specialization_info(game_ctx, local_ctx, parsed, spec)
+    print_specialization_info(game_ctx, local_ctx, text, parsed, spec)
     return true, {}
   end
 

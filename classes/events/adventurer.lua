@@ -20,7 +20,7 @@ simple_serializer.inject(AdventurerEvent)
 
 function AdventurerEvent:init()
   if not self.type then
-    error('AdventurerEvent needs a type; add, set, or unset', 3)
+    error('AdventurerEvent needs a type', 3)
   end
 
   if self.type == 'add' and not self.name then
@@ -37,6 +37,10 @@ function AdventurerEvent:init()
 
   if self.type == 'move' and (not self.adventurer_name or not self.location_name) then
     error('Cannot move an adventurer unless who specify which adventurer (adventurer_name) and to where (location_name)', 3)
+  end
+
+  if self.type == 'spec' and (not self.adventurer_name or not self.specialization) then
+    error('Cannot set an adventurers specialization unless you specify which adventurer (adventurer_name) and what specialization (specialization)', 3)
   end
 end
 
@@ -58,6 +62,8 @@ function AdventurerEvent:process(game_ctx, local_ctx)
     if not loc then error('Bad location ' .. tostring(self.location_name)) end
 
     game_ctx.adventurers[adventurer_ind]:replace_location(self.location_name)
+  elseif self.type == 'spec' then
+    adventurers.set_specialization(game_ctx, adventurer_ind, self.specialization)
   end
 end
 

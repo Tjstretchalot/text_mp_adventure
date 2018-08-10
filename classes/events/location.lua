@@ -27,6 +27,13 @@ function LocationEvent:init()
     if type(self.location) ~= 'table' then
       error('New location events require a table to pass to the location constructor!', 3)
     end
+    if type(self.location._class) ~= 'nil' then
+      error('LocationEvent must get a *serialized* location!', 3)
+    end
+  elseif self.type == 'delete' then
+    if type(self.location) ~= 'string' then
+      error('Delete location events require a string \'location\' to know which location to delete!', 3)
+    end
   else
     error('Unknown location event type: ' .. self.type)
   end
@@ -35,6 +42,8 @@ end
 function LocationEvent:process(game_ctx, local_ctx)
   if self.type == 'new' then
     locations.add_location(game_ctx, Location:new(self.location))
+  elseif self.type == 'delete' then
+    locations.delete_location(game_ctx, self.location)
   else
     error('Unknown location event type ' .. self.type)
   end

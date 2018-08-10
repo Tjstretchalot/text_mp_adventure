@@ -7,5 +7,6 @@ prototype.register('event', {
   --
   -- @tparam GameContext the state of the game
   -- @tparam LocalContext the local context
+  -- @tparam Networking networking (incase events need to be raised)
   'process'
 })

@@ -95,4 +95,12 @@ function adventurers.set_adventurer(game_ctx, id, adventurer_ind)
   game_ctx.adventurers_by_id[id] = adventurer_ind
 end
 
+--- Set the specialization of the given adventurer
+-- @tparam GameContext game_ctx the game context
+-- @tparam number advn_id the index of the adventurer
+-- @tparam string spec the name of the specialization
+function adventurers.set_specialization(game_ctx, advn_id, spec)
+  game_ctx.adventurers[advn_id].specialization = spec
+end
+
 return adventurers

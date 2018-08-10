@@ -21,7 +21,9 @@ function SetupSpawnListener:compare(other, pre) return 0 end
 function SetupSpawnListener:process(game_ctx, local_ctx, networking, event)
   locations.add_location(game_ctx, Location:new({
     name = 'pregame',
-    description = 'A place to hang out while we wait for more people'
+    description = 'A place to hang out while we wait for more people',
+    consecrated = false,
+    lighting = 'outside'
   }))
 end
 

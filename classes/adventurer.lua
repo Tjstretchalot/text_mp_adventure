@@ -48,6 +48,10 @@ function Adventurer:init()
     self.alive = true
   end
 
+  if type(self.specialization) ~= 'nil' and type(self.specialization) ~= 'string' then
+    error('Weird specialization type ' .. type(self.specialization), 3)
+  end
+
   if self.passives then
     if type(self.passives) ~= 'table' then
       error('Adventurers passives should be a table!', 3)

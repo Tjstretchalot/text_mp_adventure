@@ -145,6 +145,7 @@ function World:get_nearby(location)
 end
 
 World._serialize_pre_callbacks = { function() require('classes/world/serializers/all') end }
+World._deserialize_pre_callbacks = { World._serialize_pre_callbacks[1] }
 
 prototype.support(World, 'serializable')
 return class.create('World', World)

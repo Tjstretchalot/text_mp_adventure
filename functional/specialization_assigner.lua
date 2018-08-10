@@ -1,9 +1,14 @@
 --- Assigns specializations to the players
 -- @module specialization_assigner
 
+local table = table
+local math = math
+
+local shuffle = require('functional/shuffle')
+
 local specialization_assigner = {}
 
---- Assigns every player the 'test' specialization
+--- Assigns every player the 'test' specialization.
 -- @tparam GameContext game_ctx the game context
 -- @tparam number number_of_players the number of players
 -- @treturn {string,...}, {table,...} player specializations, bot configurations
@@ -22,13 +27,17 @@ end
 -- This produces two arrays, one which is just a list of strings that
 -- correspond with specialization names, and the other is a list of
 -- bot configurations. Bot configurations can be converted into actual
--- bots using the BotFactory.
+-- bots using the BotFactory. Both results are shuffled.
 --
 -- @tparam GameContext game_ctx the game context (used for settings)
 -- @tparam number number_of_players how many real players there are
 -- @treturn {string,...}, {table,...} player specializations, bot configurations
 function specialization_assigner:assign(game_ctx, number_of_players)
-  return assign_test(game_ctx, number_of_players)
+  local players, bots = assign_test(game_ctx, number_of_players)
+
+  shuffle(players)
+  shuffle(bots)
+  return players, bots
 end
 
 return specialization_assigner

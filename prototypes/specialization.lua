@@ -32,6 +32,6 @@ prototype.register('specialization', {
    -- is perfectly okay.
    -- @tparam GameContext game_ctx the game context
    -- @tparam LocalContext local_ctx the local context
-   -- @treturn Location the location to start in 
+   -- @treturn string the name of the location to start in 
    'get_random_starting_location'
 })

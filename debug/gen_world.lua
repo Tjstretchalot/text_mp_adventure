@@ -52,6 +52,9 @@ w:add_location('outskirts5', {
   { location = 'outskirts6', time_ms = toms(60) },
   { location = 'outskirts4', time_ms = toms(30) }
 })
+w:add_location('farma', {
+  { location = 'outskirts5', time_ms = toms(15) }
+})
 w:add_location('castle', {
   { location = 'courtyards', time_ms = toms(5) }
 })

@@ -17,7 +17,7 @@ return function(game_ctx, local_ctx, event_queue, list_processor, command_proces
     local event = event_queue:dequeue()
     while event do
       list_processor:invoke_pre_listeners(game_ctx, local_ctx, networking, event)
-      event:process(game_ctx, local_ctx)
+      event:process(game_ctx, local_ctx, networking)
       list_processor:invoke_post_listeners(game_ctx, local_ctx, networking, event)
       event = event_queue:dequeue()
     end

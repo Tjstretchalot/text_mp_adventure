@@ -108,6 +108,12 @@ end
 
 local function create_inject_deserialize(cls)
   return function(serd)
+    if cls._deserialize_pre_callbacks then
+      for _, callback in ipairs(cls._deserialize_pre_callbacks) do
+        callback()
+      end
+    end
+
     local copy = {}
     for k,v in pairs(serd) do
       if not cls._deserialize_hooks then
