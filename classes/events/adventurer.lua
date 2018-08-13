@@ -1,5 +1,7 @@
 --- Describes an event dealing with an adventurer
--- This is for high-level adventurer manipulation
+-- This is for low-level adventurer manipulation;
+-- typically you would fire another event that then
+-- fires this event (eg MoveEvent would fire an AdventurerEvent)
 -- @classmod AdventurerEvent
 
 -- region imports

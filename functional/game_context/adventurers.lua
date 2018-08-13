@@ -50,6 +50,26 @@ function adventurers.get_by_name(game_ctx, name)
   return nil
 end
 
+--- Find the adventurers at the given location
+-- @tparam GameContext game_ctx the game context
+-- @tparam string location the name of the location
+-- @treturn {Adventurer,...} adventurers at that location
+function adventurers.get_by_location(game_ctx, location)
+  if not game_ctx.adventurers then return {} end
+
+  local result = {}
+  for _, advn in ipairs(game_ctx.adventurers) do
+    for _, loc in ipairs(advn.locations) do
+      if loc == location then
+        table.insert(result, advn)
+        break
+      end
+    end
+  end
+
+  return result
+end
+
 --- Get the adventurer for the local player, if there is one
 -- @tparam GameContext game_ctx the game context
 -- @tparam LocalContext local_ctx the local context

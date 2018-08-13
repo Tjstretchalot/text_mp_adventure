@@ -59,5 +59,7 @@ w:add_location('castle', {
   { location = 'courtyards', time_ms = toms(5) }
 })
 
+local w2 = world.deserialize(w:serialize())
+
 w:save('data/world.json')
 return 'success'

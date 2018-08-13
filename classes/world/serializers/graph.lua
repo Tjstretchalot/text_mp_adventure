@@ -69,6 +69,25 @@ World:add_serialize_hook('graph', function(self, copy, k, v)
         table.insert(flattened, uniq)
 
         que:push_right(uniq)
+      else
+        -- it's possible that we were both queued onto the flat list before
+        -- either of us were evaluated. to verify this, we're going to search
+        -- his nearby_unique and try to find us. if we don't find us, then
+        -- we'll add him to our nearby unique (since we were actually
+        -- evaluated first)
+
+        local found_me = false
+        local my_neighbor_flat = flat_locs[nearby_loc.location]
+        for _, my_neighbors_neighbors in ipairs(my_neighbor_flat.nearby_unique) do
+          if my_neighbors_neighbors.location == current.location then
+            found_me = true
+            break
+          end
+        end
+
+        if not found_me then
+          table.insert(current.nearby_unique, copy_location_prims(nearby_loc))
+        end
       end
     end
   end

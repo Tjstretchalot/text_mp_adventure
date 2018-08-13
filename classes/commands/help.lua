@@ -8,7 +8,7 @@ local prototype = require('prototypes/prototype')
 
 require('prototypes/command')
 
-local TalkEvent = require('classes/events/talk')
+local word_wrap = require('functional/word_wrap')
 -- endregion
 
 local HelpCommand = {}
@@ -18,8 +18,13 @@ function HelpCommand.priority() return 'explicit' end
 function HelpCommand:parse(game_ctx, local_ctx, text)
   if text == '/help' then
     print('\n\27[1mHelp Menu\27[0m')
-    print('  /adventurers - Work with adventurers')
-    print('  /help - Show this menu')
+    word_wrap.print_wrapped(
+      '/help - see this menu\n' ..
+      '/look - look around your current location\n' ..
+      '/move - move to a different location\n' ..
+      '/specialization - learn about your specialization\n' ..
+      '/start - start the game\n',
+      2)
     local_ctx.dirty = true
     return true, {}
   end

@@ -1,6 +1,6 @@
 --- This event can be listened for by other listeners for detecting
 -- day or night cycles.
--- @module DayNightCycleEvent
+-- @classmod DayNightCycleEvent
 -- region imports
 local class = require('classes/class')
 local prototype = require('prototypes/prototype')

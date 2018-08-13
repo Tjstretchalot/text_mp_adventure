@@ -15,8 +15,8 @@ local locations = require('functional/game_context/locations')
 local RestrictTalkToSameLocationListener = {}
 
 function RestrictTalkToSameLocationListener:get_events() return { CommunicationEvent = true } end
-function RestrictTalkToSameLocationListener:is_prelistener() return false end
-function RestrictTalkToSameLocationListener:is_postlistener() return true end
+function RestrictTalkToSameLocationListener:is_prelistener() return true end
+function RestrictTalkToSameLocationListener:is_postlistener() return false end
 function RestrictTalkToSameLocationListener:compare(other, pre) return 0 end
 function RestrictTalkToSameLocationListener:process(game_ctx, local_ctx, networking, event)
   local from_advn = game_ctx.adventurers[event.from_id]

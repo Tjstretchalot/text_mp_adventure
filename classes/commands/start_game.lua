@@ -15,8 +15,11 @@ local StartGameCommand = {}
 function StartGameCommand.priority() return 'explicit' end
 
 function StartGameCommand:parse(game_ctx, local_ctx, text)
-  if local_ctx.id ~= 0 then return false, nil end
   if text ~= '/start' then return false, nil end
+  if local_ctx.id ~= 0 then
+    print('\r/start\nOnly the host can do that.')
+    return true, {}
+  end
 
   return true, { StartGameEvent:new() }
 end
