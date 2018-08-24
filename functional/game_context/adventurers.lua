@@ -123,4 +123,12 @@ function adventurers.set_specialization(game_ctx, advn_id, spec)
   game_ctx.adventurers[advn_id].specialization = spec
 end
 
+--- Set the active ability of the given adventurer.
+-- @tparam GameContext game_ctx the game context
+-- @tparam number advn_id the index of the adventurer
+-- @tparam {duration=number,ability=Event} the ability to use
+function adventurers.set_ability(game_ctx, advn_id, abil)
+  game_ctx.adventurers[advn_id].active_ability = abil
+end
+
 return adventurers

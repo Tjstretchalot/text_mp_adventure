@@ -70,7 +70,7 @@ function class.create(class_name, cls)
   if type(class_name) ~= 'string' then
     error('Didn\'t get a string as first argument to class.create; perhaps you got order backward? (cls=' .. tostring(cls) .. ')')
   end
-  
+
   if getmetatable(cls) ~= nil then
     error('Class ' .. class_name .. ' has a metatable. Do not subclass!')
   end
@@ -115,7 +115,7 @@ end
 -- @tparam table cls the class object
 -- @treturn boolean true if cls is a class, false otherwise
 function class.is_class(cls)
-  if getmetatable(cls) ~= nil then return false end
+  if getmetatable(cls) == nil then return false end
 
   return type(cls.class_name) == 'string'
 end

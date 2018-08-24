@@ -1,4 +1,6 @@
 --- Restricts movements to locations with a connection to the current location.
+-- Also uses that adjacency to determine the time it requires to get to the
+-- destination.
 -- @classmod MoveBetweenAccessibleListener
 
 -- region imports
@@ -31,6 +33,7 @@ function MoveBetweenAccessibleListener:process(game_ctx, local_ctx, networking, 
   for _,loc in ipairs(advn.locations) do
     for _,adj in ipairs(adjacent) do
       if loc == adj.location then
+        event.time_ms = adj.time_ms
         return
       end
     end

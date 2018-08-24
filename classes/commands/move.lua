@@ -10,7 +10,7 @@ require('prototypes/command')
 local arg_parser = require('functional/arg_parser')
 local adventurers = require('functional/game_context/adventurers')
 
-local MoveEvent = require('classes/events/move')
+local MoveCommandEvent = require('classes/events/move_command')
 -- endregion
 
 local MoveCommand = {}
@@ -70,7 +70,7 @@ function MoveCommand:parse(game_ctx, local_ctx, text)
       return true, {}
     end
 
-    return true, { MoveEvent:new{ adventurer_name = loc_nm, destination = loc } }
+    return true, { MoveCommandEvent:new{ adventurer_name = loc_nm, destination = loc } }
   end
 
   return false, nil

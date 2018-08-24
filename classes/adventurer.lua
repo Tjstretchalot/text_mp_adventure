@@ -10,25 +10,52 @@ local array = require('functional/array')
 
 require('prototypes/serializable')
 
+local event_serializer = require('functional/event_serializer')
+
 local Adventurer = {}
 
 -- region serializable
 function Adventurer:serialize()
   -- locations is an array of strings
   -- passives is an array of primitive tables where each table has a 'name' key
+  -- active_ability is a table of { duration: number, ability: Event }
 
   local serd_passives = passives and array.public_primitives_deep_copy(self.passives) or nil
+  local serd_active_ability = nil
+  if self.active_ability then
+    serd_active_ability = {
+      duration = self.active_ability.duration,
+      ability = event_serializer.serialize(self.active_ability.ability)
+    }
+  end
+
   return {
     name = self.name,
     alive = self.alive,
     locations = array.public_primitives_deep_copy(self.locations),
     specialization = self.specialization,
-    passives = serd_passives
+    passives = serd_passives,
+    active_ability = serd_active_ability
    }
 end
 
 function Adventurer.deserialize(serd)
-  return Adventurer._wrapped_class:new(serd)
+  local unserd = {
+    name = serd.name,
+    alive = serd.alive,
+    locations = serd.locations,
+    specialization = self.specialization,
+    passives = serd.passives
+  }
+
+  if serd.active_ability then
+    unserd.active_ability = {
+      duration = serd.active_ability.duration,
+      ability = event_serializer.deserialize(serd.active_ability.ability)
+    }
+  end
+
+  return Adventurer._wrapped_class:new(unserd)
 end
 
 function Adventurer:context_changed(game_ctx)
@@ -65,6 +92,20 @@ function Adventurer:init()
       if type(passive.name) ~= 'string' then
         error(string.format('type(passives[\'%s\'].name) = \'%s\' (string expected)', k, type(passive.name)), 3)
       end
+    end
+  end
+
+  if self.active_ability then
+    if type(self.active_ability) ~= 'table' then
+      error('Adventurers active ability should be a table!', 3)
+    end
+
+    if type(self.active_ability.duration) ~= 'number' then
+      error('Adventurers active ability should have a \'duration\' key as a number!', 3)
+    end
+
+    if not class.is_class(self.active_ability.ability) then
+      error('Adventurers active ability should be an Event to be raised on completion!', 3)
     end
   end
 end

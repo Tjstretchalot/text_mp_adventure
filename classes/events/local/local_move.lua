@@ -26,6 +26,10 @@ function LocalMoveEvent:init()
     error('LocalMoveEvent is missing destination (string name of dest location)', 3)
   end
 
+  if type(self.time_ms) ~= 'number' then
+    error('LocalMoveEvent is missing time_ms (time required to get to the location)', 3)
+  end
+
   if type(self.result) == 'nil' then
     self.result = true
   elseif type(self.result) ~= 'boolean' then

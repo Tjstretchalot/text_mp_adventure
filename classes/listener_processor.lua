@@ -162,12 +162,12 @@ function ListenerProcessor:invoke_pre_listeners(game_ctx, local_ctx, networking,
 
   if lists then
     for _, list in ipairs(lists.pre) do
-      list:process(game_ctx, local_ctx, networking, event)
+      list:process(game_ctx, local_ctx, networking, event, true)
     end
   end
 
   for _, list in ipairs(global_pre_listeners) do
-    list:process(game_ctx, local_ctx, networking, event)
+    list:process(game_ctx, local_ctx, networking, event, true)
   end
 end
 
@@ -182,12 +182,12 @@ function ListenerProcessor:invoke_post_listeners(game_ctx, local_ctx, networking
 
   if lists then
     for _, list in ipairs(lists.post) do
-      list:process(game_ctx, local_ctx, networking, event)
+      list:process(game_ctx, local_ctx, networking, event, false)
     end
   end
 
   for _, list in ipairs(global_post_listeners) do
-    list:process(game_ctx, local_ctx, networking, event)
+    list:process(game_ctx, local_ctx, networking, event, false)
   end
 end
 

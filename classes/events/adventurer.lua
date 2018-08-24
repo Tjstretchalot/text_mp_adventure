@@ -14,6 +14,7 @@ require('prototypes/event')
 require('prototypes/serializable')
 
 local simple_serializer = require('utils/simple_serializer')
+local event_serializer = require('functional/event_serializer')
 -- endregion
 
 local AdventurerEvent = {}
@@ -44,6 +45,10 @@ function AdventurerEvent:init()
   if self.type == 'spec' and (not self.adventurer_name or not self.specialization) then
     error('Cannot set an adventurers specialization unless you specify which adventurer (adventurer_name) and what specialization (specialization)', 3)
   end
+
+  if self.type == 'ability' and (not self.adventurer_name or not self.ability or not self.ability.duration or not self.ability.ability) then
+    error('Cannot set an adventurers active ability unless you specify which adventurer (adventurer_name) and the ability duration (ability.duration) and the serialized event (ability.ability)', 3)
+  end
 end
 
 function AdventurerEvent:process(game_ctx, local_ctx)
@@ -66,6 +71,11 @@ function AdventurerEvent:process(game_ctx, local_ctx)
     game_ctx.adventurers[adventurer_ind]:replace_location(self.location_name)
   elseif self.type == 'spec' then
     adventurers.set_specialization(game_ctx, adventurer_ind, self.specialization)
+  elseif self.type == 'ability' then
+    adventurers.set_ability(game_ctx, adventurer_ind, {
+      duration = self.ability.duration,
+      ability = event_serializer.deserialize(self.ability.ability)
+    })
   end
 end
 

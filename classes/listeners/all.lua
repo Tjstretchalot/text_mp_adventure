@@ -14,7 +14,9 @@ local function _scandir(dir)
 
   local dirs = file.scandir(dir, false, true)
   for _, subdir in ipairs(dirs) do
-    _scandir(dir .. subdir .. '/')
+    if subdir ~= 'abilities' then
+      _scandir(dir .. subdir .. '/')
+    end
   end
 end
 
