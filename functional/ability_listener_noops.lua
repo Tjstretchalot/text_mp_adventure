@@ -2,9 +2,14 @@
 
 local function noop() end
 local function noop_compare() return 0 end
+local function noop_false() return false end
 local function noop_true() return true end
 
 return function(listener)
+  if not listener.listen_on_clients then
+    listener.listen_on_clients = noop_false
+  end
+  
   if not listener.compare_listener then
     listener.compare_listener = noop_compare
   end

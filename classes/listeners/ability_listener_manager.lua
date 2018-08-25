@@ -133,6 +133,7 @@ all_listeners = nil
 -- region listeners by event
 -- this needs to be done after sorting to ensure we maintain sort
 local listeners_by_event = {}
+local client_listeners_by_event = {}
 
 for _, list in ipairs(sorted_listeners) do
   local evnt = list:get_listen_ability()
@@ -144,6 +145,15 @@ for _, list in ipairs(sorted_listeners) do
   end
 
   table.insert(lists_for_evnt, list)
+
+  if list:listen_on_clients() then
+    lists_for_evnt = client_listeners_by_event[evnt]
+    if lists_for_evnt == nil then
+      lists_for_evnt = {}
+      client_listeners_by_event[evnt] = lists_for_evnt
+    end
+    table.insert(lists_for_evnt, list)
+  end
 end
 -- endregion
 
@@ -176,9 +186,10 @@ function AbilityListenerManager:process_local_ability_event(game_ctx, local_ctx,
 end
 function AbilityListenerManager:process_adventurer_event(game_ctx, local_ctx, networking, event, pre)
   if event.type ~= 'ability' then return end
+  local lists_by_evnt = (local_ctx.id == 0 and listeners_by_event or client_listeners_by_event)
 
-  local wrapped_event_cname = event.ability.ability._class_name
-  local lists = listeners_by_event[wrapped_event_cname]
+  local wrapped_event_cname = event.ability.ability.es_class_name
+  local lists = lists_by_evnt[wrapped_event_cname]
   if not lists then return end
 
   if pre then
@@ -200,7 +211,8 @@ function AbilityListenerManager:process_ability_progress_event(game_ctx, local_c
     wrapped_event = event.ability
   end
 
-  local lists = listeners_by_event[wrapped_event.class_name]
+  local lists_by_evnt = (local_ctx.id == 0 and listeners_by_event or client_listeners_by_event)
+  local lists = lists_by_evnt[wrapped_event.class_name]
   if not lists then return end
 
   for _, list in ipairs(lists) do
@@ -216,7 +228,8 @@ function AbilityListenerManager:process_ability_cancelled_event(game_ctx, local_
     wrapped_event = event.ability
   end
 
-  local lists = listeners_by_event[wrapped_event.class_name]
+  local lists_by_evnt = (local_ctx.id == 0 and listeners_by_event or client_listeners_by_event)
+  local lists = lists_by_evnt[wrapped_event.class_name]
   if not lists then return end
 
   for _, list in ipairs(lists) do
@@ -245,7 +258,9 @@ function AbilityListenerManager:process_local_ability_finished_event(game_ctx, l
   end
 end
 function AbilityListenerManager:process_callback_event(game_ctx, local_ctx, networking, event, pre)
-  local lists = listeners_by_event[event.class_name]
+  local lists_by_evnt = (local_ctx.id == 0 and listeners_by_event or client_listeners_by_event)
+  local lists = lists_by_evnt[event.class_name]
+  if not lists then return end
 
   if pre then
     for _, list in ipairs(lists) do

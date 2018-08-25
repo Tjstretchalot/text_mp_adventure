@@ -14,6 +14,13 @@ prototype.register('ability_listener', {
   -- @treturn string the classname of the ability to listen for
   'get_listen_ability',
 
+  --- Returns whether this listener should process
+  -- events on clients where it may be reasonable to do
+  -- so. Any non-local event can be processed deterministically
+  -- on clients. Default false in no-op.
+  -- @treturn boolean true = call non-local functions client-side as well
+  'listen_on_clients',
+
   --- Determines the order of this listener with respect to
   -- the given listener. In this case, the listener is an
   -- ability listener.

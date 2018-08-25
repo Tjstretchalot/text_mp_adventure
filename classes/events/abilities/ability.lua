@@ -48,7 +48,7 @@ function AbilityEvent:context_changed()
 end
 
 function AbilityEvent.deserialize(serd)
-  return AbilityEvent._class:init({
+  return AbilityEvent._wrapped_class:new({
     adventurer_name = serd.adventurer_name,
     duration = serd.duration,
     callback_event = event_serializer.deserialize(serd.callback_event)

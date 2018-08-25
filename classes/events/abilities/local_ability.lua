@@ -25,7 +25,7 @@ function LocalAbilityEvent:serialize()
 end
 
 function LocalAbilityEvent.deserialize(serd)
-  return LocalAbilityEvent._class:init({
+  return LocalAbilityEvent._wrapped_class:new({
     adventurer_name = serd.adventurer_name,
     result = serd.result,
     duration = serd.duration,

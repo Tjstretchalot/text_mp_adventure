@@ -11,8 +11,12 @@ local event_serializer = {}
 -- @tparam Event evnt the event to serialize
 -- @treturn table the serialized event
 function event_serializer.serialize(evnt)
-  -- the underscore makes it easier to note this isn't a real class
-  return { _class_name = evnt.class_name, serialized = evnt:serialize() }
+  -- the es_ makes it easier to note this isn't a real class
+  if not evnt.class_name then
+    error('missing class_name for evnt!', 2)
+  end
+
+  return { es_class_name = evnt.class_name, serialized = evnt:serialize() }
 end
 
 --- Deserialize the event serialized by serialize
@@ -23,7 +27,7 @@ function event_serializer.deserialize(evnt)
     all_events = require('classes/events/all')
   end
 
-  local cls = all_events[evnt._class_name]
+  local cls = all_events[evnt.es_class_name]
   if not cls then
     print('[event_serializer] cannot deserialize: ')
     require('functional/inspect').inspect(evnt)

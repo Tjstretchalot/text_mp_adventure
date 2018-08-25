@@ -44,7 +44,7 @@ function Adventurer.deserialize(serd)
     name = serd.name,
     alive = serd.alive,
     locations = serd.locations,
-    specialization = self.specialization,
+    specialization = serd.specialization,
     passives = serd.passives
   }
 
