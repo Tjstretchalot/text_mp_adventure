@@ -306,7 +306,7 @@ function AbilityListenerManager:process_local_ability_finished_event(game_ctx, l
         event.result = succ
         return succ
       end
-    }
+    })
   else
     process_via_delegation(event.callback_event.class_name, false, {
       game_ctx = game_ctx, local_ctx = local_ctx, wrapped_event = event.callback_event,
