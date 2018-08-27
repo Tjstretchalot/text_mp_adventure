@@ -157,6 +157,46 @@ for _, list in ipairs(sorted_listeners) do
 end
 -- endregion
 
+--- Finds the appropriate listeners for the given event, then
+-- calls processor:process(listener)  for each listener.
+--
+-- Process must return *true* if more listeners should be called
+--
+-- @tparam string evnt_name the name of the event for the listeners
+-- @tparam boolean is_client true if client listeners should be called
+-- @tparam table processor the thing to call
+local function process_via_delegation(evnt_name, is_client, processor)
+  if not is_client then
+    local lists = listeners_by_event[evnt_name]
+    if lists then
+      for _, list in ipairs(lists) do
+        if not processor:process(list) then return end
+      end
+    end
+
+    lists = listeners_by_event['all']
+    if lists then
+      for _, list in ipairs(lists) do
+        if not processor:process(list) then return end
+      end
+    end
+  else
+    local lists = client_listeners_by_event[evnt_name]
+    if lists then
+      for _, list in ipairs(lists) do
+        if not processor:process(list) then return end
+      end
+    end
+
+    lists = client_listeners_by_event['all']
+    if lists then
+      for _, list in ipairs(lists) do
+        if not processor:process(list) then return end
+      end
+    end
+  end
+end
+
 local AbilityListenerManager = {}
 
 function AbilityListenerManager:get_events() return events end
@@ -165,43 +205,65 @@ function AbilityListenerManager:is_postlistener() return true end
 function AbilityListenerManager:compare(other, pre) return 0 end
 function AbilityListenerManager:process_local_ability_event(game_ctx, local_ctx, networking, event, pre)
   local wrapped_event = event.callback_event
-  local lists = listeners_by_event[wrapped_event.event_name]
-  if not lists then return end
 
   if pre then
-    for _, list in ipairs(lists) do
-      if not event.result then break end
-
-      local succ = list:can_start_ability(game_ctx, local_ctx, wrapped_event)
-      if not succ then
-        event.result = false
-        break
+    process_via_delegation(wrapped_event.event_name, false, {
+      game_ctx = game_ctx,
+      local_ctx = local_ctx,
+      wrapped_event = wrapped_event,
+      event = event,
+      process = function(me, list)
+        local succ = list:can_start_ability(me.game_ctx, me.local_ctx, me.wrapped_event)
+        if not succ then
+          me.event.result = false
+        end
+        return succ
       end
-    end
+    })
   else
-    for _, list in ipairs(lists) do
-      list:on_ability_start_determined(game_ctx, local_ctx, wrapped_event, event.result)
-    end
+    process_via_delegation(wrapped_event.event_name, false, {
+      game_ctx = game_ctx,
+      local_ctx = local_ctx,
+      wrapped_event = wrapped_event,
+      event_result = event.result,
+      process = function(me, list)
+        list:on_ability_start_determined(me.game_ctx, me.local_ctx, me.wrapped_event, me.event_result)
+        return true
+      end
+    })
   end
 end
+
 function AbilityListenerManager:process_adventurer_event(game_ctx, local_ctx, networking, event, pre)
   if event.type ~= 'ability' then return end
-  local lists_by_evnt = (local_ctx.id == 0 and listeners_by_event or client_listeners_by_event)
-
   local wrapped_event_cname = event.ability.ability.es_class_name
-  local lists = lists_by_evnt[wrapped_event_cname]
-  if not lists then return end
 
+  local is_client = local_ctx.id ~= 0
   if pre then
-    for _, list in ipairs(lists) do
-      list:pre_ability_started(game_ctx, local_ctx, networking, event)
-    end
+    process_via_delegation(wrapped_event_cname, is_client, {
+      game_ctx = game_ctx,
+      local_ctx = local_ctx,
+      networking = networking,
+      event = event,
+      process = function(me, list)
+        list:pre_ability_started(me.game_ctx, me.local_ctx, me.networking, me.event)
+        return true
+      end
+    })
   else
-    for _, list in ipairs(lists) do
-      list:post_ability_started(game_ctx, local_ctx, networking, event)
-    end
+    process_via_delegation(wrapped_event_cname, is_client, {
+      game_ctx = game_ctx,
+      local_ctx = local_ctx,
+      networking = networking,
+      event = event,
+      process = function(me, list)
+        list:post_ability_started(me.game_ctx, me.local_ctx, me.networking, me.event)
+        return true
+      end
+    })
   end
 end
+
 function AbilityListenerManager:process_ability_progress_event(game_ctx, local_ctx, networking, event, pre)
   local wrapped_event
   local advn = adventurers.get_by_name(game_ctx, event.adventurer_name)
@@ -211,13 +273,13 @@ function AbilityListenerManager:process_ability_progress_event(game_ctx, local_c
     wrapped_event = event.ability
   end
 
-  local lists_by_evnt = (local_ctx.id == 0 and listeners_by_event or client_listeners_by_event)
-  local lists = lists_by_evnt[wrapped_event.class_name]
-  if not lists then return end
-
-  for _, list in ipairs(lists) do
-    list:ability_progress(game_ctx, local_ctx, networking, event, wrapped_event, pre)
-  end
+  process_via_delegation(wrapped_event.class_name, local_ctx.id ~= 0, {
+    game_ctx = game_ctx, local_ctx = local_ctx, networking = networking, event = event,
+    wrapped_event = wrapped_event, pre = pre, process = function(me, list)
+      list:ability_progress(me.game_ctx, me.local_ctx, me.networking, me.event, me.wrapped_event, me.pre)
+      return true
+    end
+  })
 end
 function AbilityListenerManager:process_ability_cancelled_event(game_ctx, local_ctx, networking, event, pre)
   local wrapped_event
@@ -227,49 +289,49 @@ function AbilityListenerManager:process_ability_cancelled_event(game_ctx, local_
   else
     wrapped_event = event.ability
   end
-
-  local lists_by_evnt = (local_ctx.id == 0 and listeners_by_event or client_listeners_by_event)
-  local lists = lists_by_evnt[wrapped_event.class_name]
-  if not lists then return end
-
-  for _, list in ipairs(lists) do
-    list:ability_cancelled(game_ctx, local_ctx, networking, event, wrapped_event, pre)
-  end
+  process_via_delegation(wrapped_event.class_name, local_ctx.id ~= 0, {
+    game_ctx = game_ctx, local_ctx = local_ctx, networking = networking, event = event,
+    wrapped_event = wrapped_event, pre = pre, process = function(me, list)
+      list:ability_cancelled(me.game_ctx, me.local_ctx, me.networking, me.event, me.wrapped_event, me.pre)
+      return true
+    end
+  })
 end
 function AbilityListenerManager:process_local_ability_finished_event(game_ctx, local_ctx, networking, event, pre)
-  local wrapped_event = event.callback_event
-  local lists = listeners_by_event[wrapped_event.class_name]
-  if not lists then return end
-
   if pre then
-    for _, list in ipairs(lists) do
-      if not event.result then break end
-
-      local succ = list:can_finish_ability(game_ctx, local_ctx, wrapped_event)
-      if not succ then
-        event.result = false
-        break
+    process_via_delegation(event.callback_event.class_name, false, {
+      game_ctx = game_ctx, local_ctx = local_ctx, wrapped_event = event.callback_event,
+      process = function(me, list)
+        local succ = list:can_finish_ability(me.game_ctx, me.local_ctx, me.wrapped_event)
+        event.result = succ
+        return succ
       end
-    end
+    }
   else
-    for _, list in ipairs(lists) do
-      list:on_ability_finish_determined(game_ctx, local_etx, wrapped_event, event.result)
-    end
+    process_via_delegation(event.callback_event.class_name, false, {
+      game_ctx = game_ctx, local_ctx = local_ctx, wrapped_event = event.callback_event,
+      event_result = event.result, process = function(me, list)
+        list:on_ability_finish_determined(me.game_ctx, me.local_ctx, me.wrapped_event, me.event_result)
+        return true
+      end
+    })
   end
 end
 function AbilityListenerManager:process_callback_event(game_ctx, local_ctx, networking, event, pre)
-  local lists_by_evnt = (local_ctx.id == 0 and listeners_by_event or client_listeners_by_event)
-  local lists = lists_by_evnt[event.class_name]
-  if not lists then return end
-
   if pre then
-    for _, list in ipairs(lists) do
-      list:pre_ability(game_ctx, local_ctx, networking, event)
-    end
+    process_via_delegation(event.class_name, local_ctx.id ~= 0, {
+      game_ctx = game_ctx, local_ctx = local_ctx, networking = networking, event = event,
+      process = function(me, list)
+        list:pre_ability(me.game_ctx, me.local_ctx, me.networking, me.event)
+      end
+    })
   else
-    for _, list in ipairs(lists) do
-      list:post_ability(game_ctx, local_ctx, networking, event)
-    end
+    process_via_delegation(event.class_name, local_ctx.id ~= 0, {
+      game_ctx = game_ctx, local_ctx = local_ctx, networking = networking, event = event,
+      process = function(me, list)
+        list:post_ability(me.game_ctx, me.local_ctx, me.networking, me.event)
+      end
+    })
   end
 end
 
