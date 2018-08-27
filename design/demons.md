@@ -6,26 +6,25 @@
 - Chance to failure stacks multiplicatively. If you have a 30% chance to fail
 an action and another 50% chance to fail, then you have `0.3 + (0.5 * 0.7) = 0.65`
 65% chance of failure. Note order doesn't matter; `0.5 + (0.3 * 0.5) = 0.65`.
-- Movement takes you from one zone to another adjacent zone. The map specifies
-the time during the movement that is inside the first location and the time
-during the movement that is inside the second location. Movements may not be
-cancelled for any reason. The player is prevented from moving through impassable
-locations, but if a location becomes impassable during a move the player
-is immediately returned to his starting location and told why.
+- Movement takes you from one zone to another adjacent zone. Movements take
+time dependent on the map. The player is completely in the original location
+until the movement completes, when the player moves to the new location. When
+the player starts the movement, people in his location are informed. When the
+player finishes the movement, people in the destination are informed.
+- Actions fail after the time required to complete the action has already passed.
+For example, if a movement fails it will not occur until the end of the movement.
 
 **Gameplay Notes**
 
 Unless otherwise stated,
 
-- All players may move between locations. Moving takes time (see map). Players
-are alerted to movements through their location according to the light level.
-- All players with vision on a location have a chance to see any actions
-by players in that location, according to the light level.
+- Players may miss alerts from movements through their location when at lower
+light levels.
 - All abilities may be used once per cycle. Players with two abilities may
 use both. Abilities act instantly unless they state otherwise.
 - All players have **Short Sleep**: Sleep for 3 hours (11.25s at night, 16.875s
 at day). Players do not receive messages while sleeping, may be tied up by a
-single player, and do not defend attacks.
+single player, and do not defend attacks. 
 - All players have **Long Sleep**: Sleep for 6 hours (22.5s at night, 33.75s
 at day). Players do not receive messages while sleeping, may be tied up by a
 single player, and do not defend attacks.

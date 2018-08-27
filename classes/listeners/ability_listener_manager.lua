@@ -58,7 +58,9 @@ local events = {
 
 for _, list in ipairs(all_listeners) do
   local abil = list:get_listen_ability()
-  events[abil] = true
+  if abil ~= 'all' then
+    events[abil] = true
+  end
 end
 -- endregion
 
@@ -300,18 +302,18 @@ end
 function AbilityListenerManager:process_local_ability_finished_event(game_ctx, local_ctx, networking, event, pre)
   if pre then
     process_via_delegation(event.callback_event.class_name, false, {
-      game_ctx = game_ctx, local_ctx = local_ctx, wrapped_event = event.callback_event,
+      game_ctx = game_ctx, local_ctx = local_ctx, event = event, networking = networking, wrapped_event = event.callback_event,
       process = function(me, list)
-        local succ = list:can_finish_ability(me.game_ctx, me.local_ctx, me.wrapped_event)
+        local succ = list:can_finish_ability(me.game_ctx, me.local_ctx, me.networking, me.wrapped_event, me.event)
         event.result = succ
         return succ
       end
     })
   else
     process_via_delegation(event.callback_event.class_name, false, {
-      game_ctx = game_ctx, local_ctx = local_ctx, wrapped_event = event.callback_event,
+      game_ctx = game_ctx, local_ctx = local_ctx, networking = networking, wrapped_event = event.callback_event,
       event_result = event.result, process = function(me, list)
-        list:on_ability_finish_determined(me.game_ctx, me.local_ctx, me.wrapped_event, me.event_result)
+        list:on_ability_finish_determined(me.game_ctx, me.local_ctx, me.networking, me.wrapped_event, me.event_result)
         return true
       end
     })

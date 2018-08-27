@@ -120,7 +120,9 @@ prototype.register('ability_listener', {
   --
   -- @tparam GameContext game_ctx the game context
   -- @tparam LocalContext local_ctx the local context
+  -- @tparam Networking networking networking
   -- @tparam Event event the event we're trying to start
+  -- @tparam LocalAbilityFinishedEvent unw_event the raw event
   -- @treturn boolean true if we can start the ability, false otherwise
   'can_finish_ability',
 
@@ -131,6 +133,7 @@ prototype.register('ability_listener', {
     --
     -- @tparam GameContext game_ctx the game context
     -- @tparam LocalContext local_ctx the local context
+    -- @tparam Networking networking networking
     -- @tparam Event event the event that we considered finishing
     -- @tparam boolean success if we determined we can start the event
   'on_ability_finish_determined',

@@ -59,9 +59,9 @@ function AbilityFinishedEvent:process(game_ctx, local_ctx, networking)
     callback_event = self.callback_event
   }
 
-  local_ctx.listener_processor:invoke_pre_listeners(game_ctx, local_ctx, nil, local_evnt)
+  local_ctx.listener_processor:invoke_pre_listeners(game_ctx, local_ctx, networking, local_evnt)
   local_evnt:process(game_ctx, local_ctx)
-  local_ctx.listener_processor:invoke_post_listeners(game_ctx, local_ctx, nil, local_evnt)
+  local_ctx.listener_processor:invoke_post_listeners(game_ctx, local_ctx, networking, local_evnt)
 
   if not local_evnt.result then return end
 
