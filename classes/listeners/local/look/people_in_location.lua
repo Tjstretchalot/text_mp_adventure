@@ -33,7 +33,9 @@ function LocalLookEventPeopleInLocation:process(game_ctx, local_ctx, networking,
     event:append_line('People at ' .. loc .. ':')
     local ppl = adventurers.get_by_location(game_ctx, loc)
     for _, oadvn in ipairs(ppl) do
-      event:append_indented_line(oadvn.name, 2)
+      if oadvn.name == advn.name or advn:is_detected(oadvn.name) then
+        event:append_indented_line(oadvn.name, 2)
+      end
     end
   end
 end

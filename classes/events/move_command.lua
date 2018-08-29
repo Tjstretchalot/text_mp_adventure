@@ -45,9 +45,9 @@ function MoveCommandEvent:process(game_ctx, local_ctx, networking)
 
   local evnt = LocalMoveEvent:new{ adventurer_ind = advn_ind, destination = self.destination, time_ms = 0 }
 
-  local_ctx.listener_processor:invoke_pre_listeners(game_ctx, local_ctx, nil, evnt)
-  evnt:process(game_ctx, local_ctx)
-  local_ctx.listener_processor:invoke_post_listeners(game_ctx, local_ctx, nil, evnt)
+  local_ctx.listener_processor:invoke_pre_listeners(game_ctx, local_ctx, networking, evnt)
+  evnt:process(game_ctx, local_ctx, networking)
+  local_ctx.listener_processor:invoke_post_listeners(game_ctx, local_ctx, networking, evnt)
 
   if not evnt.result then
     system_messages:send(game_ctx, local_ctx, networking, advn_ind, 'Cannot move to ' .. self.destination .. ': ' .. evnt.fail_reason)

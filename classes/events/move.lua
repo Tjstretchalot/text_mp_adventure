@@ -34,7 +34,12 @@ function MoveEvent:process(game_ctx, local_ctx, networking)
 
   local advn, adventurer_ind = adventurers.get_by_name(game_ctx, self.adventurer_name)
 
-  game_ctx.adventurers[adventurer_ind]:replace_location(self.destination)
+  self.from = {}
+  for k,v in ipairs(advn.locations) do
+    self.from[k] = v
+  end
+  
+  advn:replace_location(self.destination)
 end
 
 prototype.support(MoveEvent, 'event')
