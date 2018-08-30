@@ -1,4 +1,4 @@
---- The "day" argument is a table, it has two things; { is_day: boolean, time_to_next_cycle_ms: number }
+--- The "day" argument is a table: { is_day: boolean, game_ms_since_midnight: number }
 
 local GameContext = require('classes/game_context')
 
