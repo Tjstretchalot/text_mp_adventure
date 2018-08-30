@@ -7,30 +7,22 @@ local prototype = require('prototypes/prototype')
 
 require('prototypes/listener')
 
+local adventurers = require('functional/game_context/adventurers')
+local lighting = require('functional/lighting')
 local system_messages = require('functional/system_messages')
 -- endregion
 
--- darkest to brightest
-local lightnessToDesignName = {
-  'darkness',
-  'dimly lit',
-  'brightly lit'
+local lightness_to_fail_chance = {
+  [lighting.DARKNESS] = 0.50,
+  [lighting.DIMLY_LIT] = 0,
+  [lighting.BRIGHTLY_LIT] = 0
 }
 
-local lightNamesToLightness = {
-  inside_dark = 1,
-  outside_night = 2,
-  inside_electricity = 3,
-  outside_day = 3
+local lightness_to_detect_fail_chance = {
+  [lighting.DARKNESS] = 0.9,
+  [lighting.DIMLY_LIT] = 0.5,
+  [lighting.BRIGHTLY_LIT] = 0
 }
-
-local lightnessToFailChance = {
-  0.50,
-  0,
-  0
-}
-
--- TODO detecting players fail chance
 
 local LightLevelFailListener = {}
 
@@ -39,34 +31,29 @@ function LightLevelFailListener:is_prelistener() return true end
 function LightLevelFailListener:is_postlistener() return true end
 function LightLevelFailListener:compare(other, pre) return 0 end
 
-LightLevelFailListener.pre_listeners_by_event = {
-  LocalFailEvent = function(self, game_ctx, local_ctx, networking, event)
+LightLevelFailListener.pre_listeners_by_identifier = {
+  ['AbilityFailListener:can_finish_ability'] = function(self, game_ctx, local_ctx, networking, event)
     local advn = game_ctx.adventurers[event.adventurer_ind]
+    local light_level = lighting.get_for_advn(game_ctx, advn)
+    local fail_chance = lightness_to_fail_chance[light_level]
 
-    local highest_light_level = 1
-    for _, loc_nm in ipairs(advn.locations) do
-      local loc = game_ctx.locations[loc_nm]
-
-      local lighting = loc.lighting
-      if lighting == 'outside' then
-        lighting = game_ctx.day.is_day and 'outside_day' or 'outside_night'
-      end
-
-      local light_level = lightNamesToLightness[lighting]
-      if light_level > highest_light_level then
-        highest_light_level = light_level
-      end
+    if fail_chance > 0 then
+      event:add_fail_chance('multiplicative', fail_chance, 'light level')
     end
+  end,
+  ['LocalDetectableEvent'] = function(self, game_ctx, local_ctx, networking, event)
+    local advn_to_detect, advn_to_detect_ind = adventurers.get_by_name(game_ctx, event.source.adventurer_name)
+    local light_level = lighting.get_for_advn(game_ctx, advn_to_detect)
+    local fail_chance = lightness_to_detect_fail_chance[light_level]
 
-    local failChance = lightnessToFailChance[highest_light_level]
-    if failChance > 0 then
-      event:add_fail_chance('multiplicative', failChance, 'light level')
+    if fail_chance > 0 then
+      event:add_fail_chance('multiplicative', fail_chance, 'light level')
     end
   end
 }
 
-LightLevelFailListener.post_listeners_by_event = {
-  LocalFailEvent = function(self, game_ctx, local_ctx, networking, event)
+LightLevelFailListener.post_listeners_by_identifier = {
+  ['AbilityFailListener:can_finish_ability'] = function(self, game_ctx, local_ctx, networking, event)
     if event:was_triggered('light level') then
       system_messages:send(game_ctx, local_ctx, networking, event.adventurer_ind,
         'The light level caused you to fail.')
@@ -77,9 +64,9 @@ LightLevelFailListener.post_listeners_by_event = {
 function LightLevelFailListener:process(game_ctx, local_ctx, networking, event, pre)
   local func
   if pre then
-    func = self.pre_listeners_by_event[event.class_name]
+    func = self.pre_listeners_by_identifier[event.identifier]
   else
-    func = self.post_listeners_by_event[event.class_name]
+    func = self.post_listeners_by_identifier[event.identifier]
   end
 
   if func then func(self, game_ctx, local_ctx, networking, event) end
