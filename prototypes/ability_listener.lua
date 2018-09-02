@@ -107,7 +107,8 @@ prototype.register('ability_listener', {
   -- @tparam GameContext game_ctx the game context
   -- @tparam LocalContext local_ctx the local context
   -- @tparam Networking networking the networking
-  -- @tparam Event event the AbilityCancelledEvent
+  -- @tparam AbilityCancelledEvent event the cancelled event
+  -- @tparam Event ability_event the actual ability event
   -- @tparam boolean pre if this is the pre listener (true) or post listener (false)
   'ability_cancelled',
 

@@ -30,12 +30,11 @@ local random_names = {}
 function random_names:generate()
   local phon_value = math.random(phon_weights_sum)
   local phon_ind = 1
-  while phon_weights[phon_ind] and phon_weights[phon_ind] <= phon_value do
+  while phon_weights[phon_ind + 1] and phon_weights[phon_ind] <= phon_value do
     phon_ind = phon_ind + 1
   end
 
   local phon = phonetics[phon_ind]
-
   local ind = math.random(#names[phon])
   local name = names[phon][ind]
 

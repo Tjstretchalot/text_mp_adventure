@@ -39,7 +39,8 @@ function Adventurer:serialize()
     passives = serd_passives,
     active_ability = serd_active_ability,
     detected_arr = self.detected_arr,
-    detected_lookup = self.detected_lookup
+    detected_lookup = self.detected_lookup,
+    attached_id = self.attached_id
    }
 end
 
@@ -51,7 +52,8 @@ function Adventurer.deserialize(serd)
     specialization = serd.specialization,
     passives = serd.passives,
     detected_arr = serd.detected_arr,
-    detected_lookup = serd.detected_lookup
+    detected_lookup = serd.detected_lookup,
+    attached_id = serd.attached_id
   }
 
   if serd.active_ability then
@@ -231,16 +233,22 @@ function Adventurer:is_detected(advn_nm)
 end
 
 --- Remoe a specific adventurer from this adventurers detected adventurers
--- @tparam string advn_nm the adventurer to no longer have as detected 
+-- @tparam string advn_nm the adventurer to no longer have as detected
 function Adventurer:remove_detected(advn_nm)
   local ind = self.detected_lookup[advn_nm]
   if ind == nil then
     error(string.format('[Adventurer name=\'%s\'] can\'t remove \'%s\' from detected (he\'s already not detected!)', self.name, advn_nm), 2)
   end
 
-  -- Manually shift-left in order to ensure integrity
   self.detected_lookup[advn_nm] = nil
 
+  if ind == #self.detected_arr then
+    -- In this situation we can keep integrity without any shifting
+    self.detected_arr[ind] = nil
+    return
+  end
+
+  -- Manually shift-left in order to ensure integrity
   local orig_len = #self.detected_arr
   for move_left_ind = ind + 1, orig_len do
     local nm = self.detected_arr[move_left_ind]

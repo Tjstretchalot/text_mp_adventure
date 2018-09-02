@@ -13,18 +13,27 @@ local system_messages = require('functional/system_messages')
 
 local AlertOnDetectListener = {}
 
-function AlertOnDetectListener:get_events() return { LocalDetectableEvent = true } end
+function AlertOnDetectListener:get_events() return { LocalDetectableEvent = true, LocalDetectorEvent = true } end
 function AlertOnDetectListener:is_prelistener() return false end
 function AlertOnDetectListener:is_postlistener() return true end
 function AlertOnDetectListener:compare(other, pre) return 0 end
 function AlertOnDetectListener:process(game_ctx, local_ctx, networking, event)
   if local_ctx.id ~= 0 then return end
 
-  local message = string.format('You noticed %s is here', event.adventurer_name)
-  for _, detector in ipairs(event.detectors) do
-    local detector_advn, detector_advn_ind = adventurers.get_by_name(game_ctx, detector)
+  if event.class_name == 'LocalDetectableEvent' then
+    local message = string.format('You noticed %s is here', event.adventurer_name)
+    for _, detector in ipairs(event.detectors) do
+      local detector_advn, detector_advn_ind = adventurers.get_by_name(game_ctx, detector)
 
-    system_messages:send(game_ctx, local_ctx, networking, detector_advn_ind, message, 0)
+      system_messages:send(game_ctx, local_ctx, networking, detector_advn_ind, message, 0)
+    end
+  else
+    local detector_advn, detector_advn_ind = adventurers.get_by_name(game_ctx, event.adventurer_name)
+    for _, detected in ipairs(event.detected) do
+      local message = string.format('You noticed %s is here', detected)
+
+      system_messages:send(game_ctx, local_ctx, networking, detector_advn_ind, message, 0)
+    end
   end
 end
 

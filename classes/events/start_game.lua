@@ -14,6 +14,7 @@ local spec_assigner = require('functional/specialization_assigner')
 local spec_pool = require('classes/specializations/specialization_pool')
 
 local AdventurerEvent = require('classes/events/adventurer')
+local BotAddEvent = require('classes/events/bot_add')
 local LocationEvent = require('classes/events/location')
 local LoadWorldEvent = require('classes/events/load_world')
 
@@ -46,7 +47,7 @@ function StartGameEvent:process(game_ctx, local_ctx, networking)
 
   -- region decide adventurer stuff
   local num_players = #game_ctx.adventurers
-  local specs, _ = spec_assigner:assign(game_ctx, num_players)
+  local specs, bots = spec_assigner:assign(game_ctx, num_players)
   local advn_locs = {}
   for k, advn in ipairs(game_ctx.adventurers) do
     local spec = spec_pool:get_by_name(specs[k])
@@ -76,6 +77,14 @@ function StartGameEvent:process(game_ctx, local_ctx, networking)
   for k, advn in ipairs(game_ctx.adventurers) do
     table.insert(evnts, AdventurerEvent:new{ type = 'spec', adventurer_name = advn.name, specialization = specs[k] })
     table.insert(evnts, AdventurerEvent:new{ type = 'move', adventurer_name = advn.name, location_name = advn_locs[k] })
+  end
+  networking:broadcast_events(game_ctx, local_ctx, evnts)
+  -- endregion
+
+  -- region add bots
+  evnts = {}
+  for k, bot in ipairs(bots) do
+    table.insert(evnts, BotAddEvent:new(bot))
   end
   networking:broadcast_events(game_ctx, local_ctx, evnts)
   -- endregion

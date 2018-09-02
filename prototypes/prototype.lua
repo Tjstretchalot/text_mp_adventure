@@ -53,4 +53,18 @@ function prototype.support(cls, name)
   cls.prototypes[#cls.prototypes + 1] = name
 end
 
+--- Determine if the given class supports the given prototype
+-- @tparam table cls the class that should support the prototype
+-- @tparam string name the prototype you want to detect
+-- @treturn boolean true if cls supports prototype, false otherwise
+function prototype.is_supported_by(cls, name)
+  if not cls.prototypes then return false end
+
+  for _, p in ipairs(cls.prototypes) do
+    if p == name then return true end
+  end
+
+  return false
+end
+
 return prototype

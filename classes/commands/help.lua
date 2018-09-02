@@ -19,9 +19,11 @@ function HelpCommand:parse(game_ctx, local_ctx, text)
   if text == '/help' then
     print('\n\27[1mHelp Menu\27[0m')
     word_wrap.print_wrapped(
+      '/ability - check how much longer on your current action\n' ..
       '/help - see this menu\n' ..
       '/look - look around your current location\n' ..
       '/move - move to a different location\n' ..
+      '/search - search your location for people\n' ..
       '/specialization - learn about your specialization\n' ..
       '/start - start the game\n',
       2)

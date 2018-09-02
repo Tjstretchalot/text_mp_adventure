@@ -127,6 +127,43 @@ function game_time.pretty_12_hour_clock(ms_since_midnight)
   return string.format('%d:%.2d%s', hours, mins, am and 'am' or 'pm')
 end
 
+--- Convert the number of milliseconds elapsed to a pretty format (ie
+-- 3 hours, 5 minutes)
+function game_time.pretty_elapsed(ms)
+  local hours = math.floor(ms / MILLISECONDS_PER_HOUR )
+  local remaining = ms - (hours * MILLISECONDS_PER_HOUR)
+  local minutes = math.floor(remaining / (MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE))
+  remaining = remaining - (minutes * MILLISECONDS_PER_SECOND * SECONDS_PER_MINUTE)
+  local seconds = math.floor(remaining / MILLISECONDS_PER_SECOND)
+
+  if hours >= 2 then
+    if minutes < 15 then
+      return string.format('about %d hours', hours)
+    elseif minutes < 45 then
+      return string.format('about %d and a half hours', hours)
+    else
+      return string.format('about %d hours', hours + 1)
+    end
+  end
+
+  if hours == 1 then
+    local min_approx = math.round(minutes / 5)
+    if min_approx == 0 then
+      return string.format('about an hour')
+    elseif minutes < 30 then
+      return string.format('about an hour and %d minutes', minutes)
+    elseif minutes == 30 then
+      return string.format('about an hour an a half')
+    elseif minutes < 60 then
+      return string.format('about an hour and %d minutes', minutes)
+    else
+      return 'about 2 hours'
+    end
+  end
+
+  return string.format('%d minutes', minutes)
+end
+
 --- Determines if the number of milliseconds since midnight corresponds
 -- with the day part of the day
 -- @tparam number ms_since_midnight the milliseconds since midnight

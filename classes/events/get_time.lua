@@ -28,6 +28,11 @@ end
 function GetTimeEvent:process(game_ctx, local_ctx, networking)
   local text = '/time'
   local msg = game_time.pretty_12_hour_clock(game_ctx.day.game_ms_since_midnight)
+  if game_ctx.day.is_day then
+    msg = msg .. ' (day)'
+  else
+    msg = msg .. ' (night)'
+  end
 
   local advn_ind = game_ctx.adventurers_by_id[self.player_id]
   if advn_ind then

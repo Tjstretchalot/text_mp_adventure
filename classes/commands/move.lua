@@ -1,4 +1,4 @@
---- This command moves the adventurer through the AdventurerEvent
+--- This command moves the adventurer through the MoveCommandEvent
 -- @classmod MoveCommand
 
 -- region imports

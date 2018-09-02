@@ -49,6 +49,15 @@ LightLevelFailListener.pre_listeners_by_identifier = {
     if fail_chance > 0 then
       event:add_fail_chance('multiplicative', fail_chance, 'light level')
     end
+  end,
+  ['LocalDetectorEvent'] = function(self, game_ctx, local_ctx, networking, event)
+    local advn_to_detect, advn_to_detect_ind = adventurers.get_by_name(game_ctx, event.source.detectable_name)
+    local light_level = lighting.get_for_advn(game_ctx, advn_to_detect)
+    local fail_chance = lightness_to_detect_fail_chance[light_level]
+
+    if fail_chance > 0 then
+      event:add_fail_chance('multiplicative', fail_chance, 'light level')
+    end
   end
 }
 

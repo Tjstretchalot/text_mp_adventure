@@ -1,6 +1,6 @@
 local sleep = require('socket').sleep
 
-return function(game_ctx, local_ctx, event_queue, list_processor, command_processor, networking, on_loop)
+return function(game_ctx, local_ctx, list_processor, command_processor, networking, on_loop)
   local on_loop = on_loop or function() end
   local exit_requested = false
 
@@ -14,16 +14,8 @@ return function(game_ctx, local_ctx, event_queue, list_processor, command_proces
   local last_input = ''
   local cached_input = ''
   while not exit_requested do
-    local event = event_queue:dequeue()
-    while event do
-      list_processor:invoke_pre_listeners(game_ctx, local_ctx, networking, event)
-      event:process(game_ctx, local_ctx, networking)
-      list_processor:invoke_post_listeners(game_ctx, local_ctx, networking, event)
-      event = event_queue:dequeue()
-    end
-
+    networking:update(game_ctx, local_ctx)
     on_loop()
-    networking:update(game_ctx, local_ctx, event_queue)
 
     local handle = io.popen('GetAvailableKeys.exe')
     local new_input = handle:read('*all')

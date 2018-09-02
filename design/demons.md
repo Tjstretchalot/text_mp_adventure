@@ -20,14 +20,22 @@ Unless otherwise stated,
 
 - Players may miss alerts from movements through their location when at lower
 light levels.
+- Adventurer "Adam" will not detect adventurer "Eve" unless either Adam does
+something that would alert Eve, or Eve searches his vicinity and locates Adam
+- After movement adventurers automatically scan the new area immediately,
+but scans done this way have a 25% additional chance to fail (multiplicative)
+and do not affect future search success
 - All abilities may be used once per cycle. Players with two abilities may
 use both. Abilities act instantly unless they state otherwise.
 - All players have **Short Sleep**: Sleep for 3 hours (11.25s at night, 16.875s
 at day). Players do not receive messages while sleeping, may be tied up by a
-single player, and do not defend attacks. 
+single player, and do not defend attacks.
 - All players have **Long Sleep**: Sleep for 6 hours (22.5s at night, 33.75s
 at day). Players do not receive messages while sleeping, may be tied up by a
 single player, and do not defend attacks.
+- All players have **Search**: Search your own location for people. 25%
+less effective per use in the same area (multiplicative) (reset by movement).
+Requires 30 minutes (1.875s during night, 2.8125s during day)
 - All demons give off a demonic trace in any location they enter, lasting one
 cycle.
 - All demons have the ability **Prove Demon** which proves they are a demon
@@ -49,10 +57,10 @@ Locations have a light level:
   - Darkness (inside without lighting) - 10% chance to detect other players.
 50% chance of failure for all actions.
 
-Players have a sleep requirement. They must sleep at least 6 hours (20s at
-night or 34s at day) per day or suffer one level of exhaustion. Exhaustion is
-cleared after 6 hours of rest.
-Exhaustion levels are:
+Players have a sleep requirement. They gain one level of exhaustion at the
+start of every day, and they lose one level of exhaustion for every 6 hours
+slept.
+
 
 - **Tired**: 30% chance of failure on all actions
 - **Fatigued**: 50% chance of failure on all actions

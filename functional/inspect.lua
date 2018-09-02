@@ -30,12 +30,34 @@ function inspect.pretty_print_table(tabl, nest_level, indent_str, spotted, seria
         io.write('{ .. class ' .. v.class_name .. ' omitted .. }\n')
       else
         spotted[v] = true
-        io.write(tostring(v) .. ' = {\n')
+        if not v.class_name then
+          io.write('generic ' .. tostring(v))
+        else
+          io.write('instance ' .. string.sub(tostring(v), 8) .. ' of ' .. v.class_name)
+        end
+        io.write(' = {\n')
         inspect.pretty_print_table(v, nest_level + 1, indent_str, spotted, serialize)
         for i=1, nest_level do
           io.write(indent_str)
         end
-        io.write('}\n')
+        io.write('}')
+
+        if serialize and array.contains(v.prototypes, 'serializable') then
+          io.write('; when serialized, this = {\n')
+          local serd = v:serialize()
+          inspect.pretty_print_table(serd, nest_level + 1, indent_str, spotted, serialize)
+          for i=1, nest_level do
+            io.write(indent_str)
+          end
+          io.write('}; when THAT is deserialized, this = {\n')
+          local deserd = v._wrapped_class.deserialize(serd)
+          inspect.pretty_print_table(deserd, nest_level + 1, indent_str, spotted, false)for i=1, nest_level do
+            io.write(indent_str)
+          end
+          io.write('}')
+        end
+
+        io.write('\n')
       end
     elseif type(v) == 'string' then
       io.write('\'')

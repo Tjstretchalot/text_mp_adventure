@@ -89,6 +89,7 @@ function AdventurerEvent:process(game_ctx, local_ctx)
 
     game_ctx.adventurers[adventurer_ind]:replace_location(self.location_name)
   elseif self.type == 'spec' then
+    print('set spec of ' .. adventurer_ind .. ' to ' .. self.specialization)
     adventurers.set_specialization(game_ctx, adventurer_ind, self.specialization)
   elseif self.type == 'ability' then
     adventurers.set_ability(game_ctx, adventurer_ind, {

@@ -11,14 +11,19 @@ local specialization_assigner = {}
 --- Assigns every player the 'test' specialization.
 -- @tparam GameContext game_ctx the game context
 -- @tparam number number_of_players the number of players
--- @treturn {string,...}, {table,...} player specializations, bot configurations
+-- @treturn {string,...}, {table,...} player specializations, params for new BotAddEvents
 local function assign_test(game_ctx, number_of_players)
   local players = {}
   for i=1, number_of_players do
     table.insert(players, 'test')
   end
 
-  return players, {}
+  local bots = {}
+  for i=1, 16 - number_of_players do
+    table.insert(bots, { specialization = 'npc', bot_class_name = 'NPCBot' })
+  end
+
+  return players, bots
 end
 
 --- Randomly produces a set of specializations for the given
@@ -26,8 +31,8 @@ end
 --
 -- This produces two arrays, one which is just a list of strings that
 -- correspond with specialization names, and the other is a list of
--- bot configurations. Bot configurations can be converted into actual
--- bots using the BotFactory. Both results are shuffled.
+-- bot configurations. Bot configurations are passed to the BotAddEvent
+-- as the constructor arguments. Both results are shuffled.
 --
 -- @tparam GameContext game_ctx the game context (used for settings)
 -- @tparam number number_of_players how many real players there are

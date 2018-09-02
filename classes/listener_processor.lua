@@ -1,4 +1,6 @@
---- This class handles the listeners for processing events
+--- This class handles the listeners for processing events. This
+-- class currently acts like a singleton but uses colon references
+-- in case it needs to be upgraded to a true class.
 -- @classmod ListenerProcessor
 
 -- region imports
@@ -143,7 +145,7 @@ local new_listeners_by_event = {}
 for evn_name, lists in pairs(listeners_by_event) do
   new_listeners_by_event[evn_name] = {
     pre = get_sorted_listeners(lists.pre, true),
-    post = get_sorted_listeners(lists.post, true)
+    post = get_sorted_listeners(lists.post, false)
   }
 end
 listeners_by_event = new_listeners_by_event
@@ -190,5 +192,111 @@ function ListenerProcessor:invoke_post_listeners(game_ctx, local_ctx, networking
     list:process(game_ctx, local_ctx, networking, event, false)
   end
 end
+
+-- region add listener
+local function add_listener_to_table_sorted(tbl, listener, pre)
+  if #tbl == 0 then
+    table.insert(tbl, listener)
+    return
+  end
+
+  local earliest_index = 1
+  local latest_index = #tbl + 1
+
+  for i=1, #tbl do
+    local listener_comp_to_tbli = get_order(listener, tbl[i], pre)
+
+    if listener_comp_to_tbli < 0 then
+      earliest_index = i + 1
+    elseif listener_comp_to_tbli > 0 then
+      latest_index = i
+    end
+  end
+
+  if earliest_index < latest_index then
+    local msg = 'Cannot add listener to table (pre=' .. tostring(pre) .. ')!\n'
+    msg = msg .. string.format('  Listener: %s (pre=%s, post=%s)\n', listener.class_name, tostring(listener:is_prelistener()), tostring(listener:is_postlistener()))
+    msg = msg .. 'Table:\n'
+    for i=1, #tbl do
+      local cls_nm = tbl[i].class_name
+      local tbli_to_listener = tbl[i]:compare(listener.class_name, pre)
+      local listener_to_tbli = listener:compare(tbl[i].class_name, pre)
+      msg = msg .. string.format('  %s: to list: %d, to tbl[i]: %d\n', cls_nm, tbli_to_listener, listener_to_tbli)
+    end
+    msg = msg .. 'earliest_index: ' .. tostring(earliest_index)
+    msg = msg .. 'latest_index: ' .. tostring(latest_index)
+  end
+
+  if latest_index == #tbl + 1 then
+    table.insert(tbl, listener)
+  else
+    table.insert(tbl, latest_index, listener)
+  end
+end
+
+--- Adds a listener to the listener processor. This is slower than
+-- having the listener be in the listener table in the first place,
+-- however it's better than resorting every time. It's not particularly
+-- optimized right now.
+--
+-- This is the only way to get a listener to be instance-specific right now.
+-- @tparam Listener listener the listener to add
+function ListenerProcessor:add_listener(listener)
+  local listens_to = listener:get_events()
+  local is_pre = listener:is_prelistener()
+  local is_post = listener:is_postlistener()
+
+  if listens_to == '*' then
+    if is_pre then
+      add_listener_to_table_sorted(global_pre_listeners, listener, true)
+    end
+    if is_post then
+      add_listener_to_table_sorted(global_post_listeners, listener, false)
+    end
+  else
+    for evn_nm, _ in pairs(listens_to) do
+      local lists = listeners_by_event[evn_nm]
+      if not lists then
+        lists = { pre = {}, post = {} }
+        listeners_by_event[evn_nm] = lists
+      end
+
+      if is_pre then
+        add_listener_to_table_sorted(lists.pre, listener, true)
+      end
+      if is_post then
+        add_listener_to_table_sorted(lists.post, listener, false)
+      end
+    end
+  end
+end
+
+--- Remove the specified listener by reference equality
+-- @tparam listener the listener to remvoe
+function ListenerProcessor:remove_listener(listener)
+  local listens_to = listener:get_events()
+  local is_pre = listener:is_prelistener()
+  local is_post = listener:is_postlistener()
+
+  if listens_to == '*' then
+    if is_pre then
+      table_remove_by_value(global_pre_listeners, listener)
+    end
+    if is_post then
+      table_remove_by_value(global_post_listeners, listener)
+    end
+  else
+    for _, evn_nm in ipairs(listens_to) do
+      local lists = listeners_by_event[evn_nm]
+      if is_pre then
+        table_remove_by_value(lists.pre, listener)
+      end
+      if is_post then
+        table_remove_by_value(lists.post, listener)
+      end
+    end
+  end
+end
+-- endregion
 
 return class.create('ListenerProcessor', ListenerProcessor)

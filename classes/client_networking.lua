@@ -7,13 +7,14 @@ local socket = require('socket')
 
 local class = require('classes/class')
 local prototype = require('prototypes/prototype')
+local event_serializer = require('functional/event_serializer')
 
 local deque = require('classes/dequeue/deque')
 
 require('prototypes/networking')
 
 local GameContext = require('classes/game_context')
-local Events = require('classes/events/all')
+local EventQueue = require('classes/event_queue')
 
 local ExitEvent = require('classes/events/exit')
 -- endregion
@@ -32,6 +33,9 @@ function ClientNetworking:init()
   -- Contains {line = string, start_index = number}
   self.awaiting_send = deque.new()
   self.current_receive = ''
+
+  self.event_queue = EventQueue:new()
+  self.raw_queue = deque.new()
 end
 
 --- Connect to the host and port set via the constructor
@@ -63,31 +67,36 @@ function ClientNetworking:connect()
   local initial_sync_events = {}
 
   for i, serd in ipairs(initial_sync_events_serd) do
-    initial_sync_events[i] = Events[serd[1]].deserialize(serd[2])
+    initial_sync_events[i] = event_serializer.deserialize(serd)
   end
 
   self.server:settimeout(0)
   return game_ctx, initial_sync_events
 end
 
-local function parse_from_server(self, game_ctx, local_ctx, event_queue, msg)
+local function parse_from_server(self, game_ctx, local_ctx, msg)
   local events_serd = json.decode(msg)
 
   for _, serd in ipairs(events_serd) do
-    local event = Events[serd[1]].deserialize(serd[2])
-    event:context_changed(game_ctx)
-    event_queue:enqueue(event)
+    if serd.signal then
+      self.raw_queue:push_right(serd.type)
+    else
+      local event = event_serializer.deserialize(serd)
+      event:context_changed(game_ctx)
+
+      self.raw_queue:push_right(event)
+    end
   end
 end
 
-local function try_read_from_server(self, game_ctx, local_ctx, event_queue)
+local function try_read_from_server(self, game_ctx, local_ctx)
   while true do
     local from_server, err, partial_read = self.server:receive('*l')
 
     if from_server then
       local full_msg = self.current_receive .. from_server
       self.current_receive = ''
-      parse_from_server(self, game_ctx, local_ctx, event_queue, full_msg)
+      parse_from_server(self, game_ctx, local_ctx, full_msg)
     elseif err == 'timeout' then
       if partial_read and partial_read ~= '' then
         self.current_receive = self.current_receive .. partial_read
@@ -119,8 +128,28 @@ local function try_send_to_server(self)
   return true, nil
 end
 
-function ClientNetworking:update(game_ctx, local_ctx, event_queue)
-  local succ, err = try_read_from_server(self, game_ctx, local_ctx, event_queue)
+local function process_queues(self, game_ctx, local_ctx)
+  while true do
+    local raw = self.raw_queue:pop_left()
+
+    if not raw then
+      return -- wait for more stuff to do
+    elseif raw == 'start' then
+      local event = self.event_queue:dequeue()
+      self.event_queue:push()
+      local_ctx.listener_processor:invoke_pre_listeners(game_ctx, local_ctx, self, event)
+      event:process(game_ctx, local_ctx, self)
+      local_ctx.listener_processor:invoke_post_listeners(game_ctx, local_ctx, self, event)
+    elseif raw == 'finish' then
+      self.event_queue:pop()
+    else
+      self.event_queue:enqueue(raw)
+    end
+  end
+end
+
+function ClientNetworking:update(game_ctx, local_ctx)
+  local succ, err = try_read_from_server(self, game_ctx, local_ctx)
   if not succ then
     error('Failed to read from server (err = ' .. err .. ')')
   end
@@ -129,12 +158,14 @@ function ClientNetworking:update(game_ctx, local_ctx, event_queue)
   if not succ then
     error('Failed to write to server (err = ' .. err .. ')')
   end
+
+  process_queues(self, game_ctx, local_ctx)
 end
 
 function ClientNetworking:broadcast_events(game_ctx, local_ctx, events)
   local serd = {}
   for i, ev in ipairs(events) do
-    serd[i] = { ev.class_name, ev:serialize() }
+    serd[i] = event_serializer.serialize(ev)
   end
 
   local serd_encoded = json.encode(serd) .. '\n'

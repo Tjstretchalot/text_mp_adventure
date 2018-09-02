@@ -9,7 +9,6 @@ local file = require('functional/file')
 
 local GameContext = require('classes/game_context')
 local LocalContext = require('classes/local_context')
-local EventQueue = require('classes/event_queue')
 local CommandProcessor = require('classes/command_processor')
 local ListenerProcessor = require('classes/listener_processor')
 local HostNetworking = require('classes/host_networking')
@@ -22,7 +21,7 @@ local NewGameEvent = require('classes/events/new_game')
 
 -- endregion
 
-local game_ctx, event_queue
+local game_ctx
 
 local local_ctx = LocalContext:new({id = 0})
 local listener_processor = ListenerProcessor:new()
@@ -33,8 +32,6 @@ local_ctx.listener_processor = listener_processor
 -- region loading helpers
 local function create_new()
   game_ctx = GameContext:new()
-  event_queue = EventQueue:new()
-  event_queue:enqueue(NewGameEvent:new())
 end
 
 local function load()
@@ -42,12 +39,8 @@ local function load()
   game_ctx = GameContext.deserialize(json.decode(file:read('*all')))
   file:close()
 
-  file = io.open('saves/event_queue.json')
-  event_queue = EventQueue.deserialize(json.decode(file:read('*all')))
-  file:close()
-
+  -- todo event queue?
   game_ctx:context_changed(game_ctx)
-  event_queue:context_changed(game_ctx)
 end
 
 local function create_or_load()
@@ -70,9 +63,7 @@ local function save()
   file:write(json.encode(game_ctx:serialize()))
   file:close()
 
-  file = io.open('saves/event_queue.json', 'w')
-  file:write(json.encode(event_queue:serialize()))
-  file:close()
+  -- todo event queue?
 end
 -- endregion
 -- region lock helpers
@@ -106,6 +97,7 @@ create_or_load()
 
 local port = console.numeric('What port? Use 0 for the os to choose: ')
 local host_networking = HostNetworking:new{port = port}
+host_networking:broadcast_events(game_ctx, local_ctx, { NewGameEvent:new() })
 
 print('Bound on ' .. host_networking.ip .. ':' .. host_networking.port)
 
@@ -120,15 +112,19 @@ local function update_time()
 end
 
 local succ, err = xpcall(function()
-  require('main_input_loop')(game_ctx, local_ctx, event_queue, listener_processor, command_processor, host_networking, update_time)
+  require('main_input_loop')(game_ctx, local_ctx, listener_processor, command_processor, host_networking, update_time)
 end, function(e)
   return {e, debug.traceback()}
 end)
 
 -- region cleanup
 if not succ then
-  print('Error: ' .. err[1])
-  print(err[2])
+  if string.find(err[1], 'ExitEvent:process', 1, true) then
+    print('Server shutdown successful')
+  else
+    print('Error: ' .. err[1])
+    print(err[2])
+  end
 end
 -- endregion
 

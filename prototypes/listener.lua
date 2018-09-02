@@ -1,4 +1,6 @@
 --- Describes something which listens for other events
+-- Note that listeners are, by default, singletons. In order to get non-singleton
+-- behavior it must be injected into the listener processor post initialization
 
 local prototype = require('prototypes/prototype')
 
